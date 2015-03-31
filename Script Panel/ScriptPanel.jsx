@@ -1633,7 +1633,7 @@ function ScriptPanel(){
             deselectEverything(this);
         }
         var sep = w.add('group'); sep.size = [200,4];
-        var g2_holder = w.add('group'); g2_holder.orientation = 'stacked';
+        var g2_holder = w.add('group'); g2_holder.orientation = 'stack';
         var g2 = g2_holder.add('group');
         var btn_min = g2.add('button', undefined, 'Min'); btn_min.size=[31,31];
         btn_min.helpTip='Minimize this palette';
