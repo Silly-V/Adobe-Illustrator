@@ -938,7 +938,7 @@ function VariableImporter(){
                                             thisVarContent = (thisVarContent == '') ? 'false' : 'true';
                                         }
                                     } else if(thisVar.variableType == variableLabels[2] && thisVar.prependPath){
-                                        // deal with linked files when checked to prepent a path
+                                        // deal with linked files when checked to prepend a path
                                         var folderDiv = (os == "Windows")? "\\" : "/";
                                         thisVarContent = thisVar.url+folderDiv+thisVarContent;
                                     }
