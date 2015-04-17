@@ -13,6 +13,10 @@
     }
 */
 
+// borderles dragability by Carlos Cantos
+// add to Silly-v,s script panel by Qwertyfly.
+// along with thin dark bar at top to look like CC
+
 #target illustrator
 #targetengine main
 function ScriptPanel(){
@@ -1554,9 +1558,30 @@ function ScriptPanel(){
     }
     function paletteWindow(){
         var windowType = 'palette' ;
-        var w = new Window(windowType, 'Script Panel', undefined, {closeButton: true});
-        w.spacing = 2; w.margins= [5,5,5,5];
+        var w = new Window(windowType, 'Script Panel', undefined, {borderless: true});
+        w.spacing = 2; w.margins= 0;
         w.location = SETTINGS.bigWindowLocation;
+        
+                var bar = w.add('group');
+        bar.graphics.backgroundColor = w.graphics.newBrush(w.graphics.BrushType.SOLID_COLOR,[0.16,0.16,0.16]);
+        bar.alignment = ['fill','top'];
+        bar.margins = [0,0,5,0];
+        bar.spacing = 0;
+        var min = bar.add('statictext',undefined,'«');
+        min.alignment = ['right','top'];
+        min.size = [17,13];
+        min.addEventListener('click',function () {
+            var loc = (SETTINGS.syncLocations) ?  w.location : SETTINGS.tinyWindowLocation ;
+            SETTINGS.tinyWindowLocation = loc;
+            SETTINGS.bigWindowLocation = w.location;
+            var thisMiniTab= new miniTab();
+            thisMiniTab.show();
+            w.close();
+        });
+        var xClose = bar.add('statictext',undefined,'×');
+        xClose.alignment = ['right','top'];
+        xClose.size = [10,13];
+        xClose.addEventListener('click',function () {w.close()});
         
         var g0 = w.add('group');
 
@@ -1766,6 +1791,7 @@ function ScriptPanel(){
             var enableFolderItems = (SETTINGS.admin)? [btn_configuration] : [];
             refreshViews(t, favListGroupHolder, [g2], [g2_2], enableFolderItems);
         }
+        makeWinDraggable (w,bar);
         this.show = function(){w.show();}
     }
     var thisPaletteWindow = new paletteWindow();
@@ -1773,3 +1799,39 @@ function ScriptPanel(){
 }
 
 ScriptPanel();
+
+function makeWinDraggable (w,bar) {  
+/* //********************************************* 
+    Pass a window of any kind to be able to click and drag the window around 
+    CC - didn't work, had to add a panel the size of the window, then add all controls to the panel 
+    CS6 - didn't work with the panel, add controls to the Window 
+    CS5 - worked beautifully with or without the panel, all testing done in Windows 
+    Carlos Canto // 04/12/15 
+*/ //*********************************************  
+
+    var xClient, yClient; // mouse position from left/top window (client is the Panel if added)  
+     
+    w.drag = false;  
+     
+    bar.addEventListener('mousemove', moveHandler); //calls function when the mouse moves inside the window  
+    bar.addEventListener('mousedown', downHandler); // (eventName, handler, capturePhase);  
+    bar.addEventListener('mouseup', upHandler); // (eventName, handler, capturePhase);  
+    bar.addEventListener('mouseout', upHandler); // fix for fast mouse movement that leaves cursor outside window without triggering upHandler
+     
+    function moveHandler(e) {  
+        if (w.drag) {  
+            w.location = [e.screenX-xClient, e.screenY-yClient]; // screenX/Y, mouse position from Monitor left/top  
+        }  
+    } 
+
+    function downHandler(e) {  
+        w.drag = true;  
+        xClient = e.clientX;  
+        yClient = e.clientY;  
+    } 
+
+    function upHandler(e) {  
+        w.drag = false;  
+    }  
+ 
+} 
