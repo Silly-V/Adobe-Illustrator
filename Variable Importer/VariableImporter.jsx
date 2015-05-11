@@ -1,11 +1,11 @@
 ﻿#target illustrator
 /**
-* @@@BUILDINFO@@@ VariableImporter.jsx !Version! Thu Apr 23 2015 22:57:53 GMT-0500
+* @@@BUILDINFO@@@ VariableImporter_work.jsx !Version! Mon May 11 2015 16:11:54 GMT-0500
 */
 
 
 /*
-    ============================= VARIABLE IMPORTER ==============================
+    ============================= VARIABLE IMPORTER v6.3 ==============================
     By Vasily Hall
     e:
     vasily.hall@gmail.com
