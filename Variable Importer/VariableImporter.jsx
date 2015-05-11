@@ -1054,13 +1054,12 @@ function VariableImporter(){
         f.execute();
     }
     function performBrowserAction(item){
-        if($.os == "Macintosh OS 10.10.3"){
-//quickView("Sorry, Yosemite users, you have to paste this URL manually into a browser to perform this action:\r\r"+BrowserActionURLStrings[item]);
+        if(os == "Mac"){
             openURL(BrowserActionURLStrings[item]);
-            return;
+        } else {
+            var keepHTML = false;
+            writeHTHMLFile(wrapInHTML('', wrapInScriptTags(wrapInScriptAction(BrowserActionURLStrings[item]))), keepHTML);
         }
-        var keepHTML = false;
-        writeHTHMLFile(wrapInHTML('', wrapInScriptTags(wrapInScriptAction(BrowserActionURLStrings[item]))), keepHTML);
     }
     function analyzeHeaderCell(cell, idx){
         var result = {name: '', type: variableLabels[0]};
