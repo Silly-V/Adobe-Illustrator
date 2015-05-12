@@ -1,11 +1,11 @@
-﻿#target illustrator
+#target illustrator
 /**
-* @@@BUILDINFO@@@ VariableImporter_work.jsx !Version! Mon May 11 2015 16:11:54 GMT-0500
+* @@@BUILDINFO@@@ VariableImporter.jsx !Version! Tue May 12 2015 16:01:24 GMT-0500
 */
 
 
 /*
-    ============================= VARIABLE IMPORTER v6.3 ==============================
+    ============================= VARIABLE IMPORTER v6.5 ==============================
     By Vasily Hall
     e:
     vasily.hall@gmail.com
@@ -1014,8 +1014,7 @@ function VariableImporter(){
         if(HTMLFile.exists){
             HTMLFile.execute();
             if(cleanup){
-                $.sleep(1000);
-                HTMLFile.remove();
+                /*HTMLFile.remove(); //does not work if removed immediately. */
             }
         } else {
             alert("Sorry, web link did not work because the HTML file could not be written to desktop.");
