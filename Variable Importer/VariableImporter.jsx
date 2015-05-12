@@ -1001,7 +1001,7 @@ function VariableImporter(){
     function writeHTHMLFile(contents, cleanup){
         cleanup = cleanup || false;
         function writeTheFile(contents){
-            var HTMLFile = new File(File(Folder.desktop+"/VariableImporter_HTMLDocument.html").fsName.replace("file://",""));
+            var HTMLFile = new File(File(Folder.temp+"/VariableImporter_HTMLDocument.html").fsName.replace("file://",""));
             HTMLFile.encoding = "UTF-8";
             HTMLFile.open('w');
             HTMLFile.write(contents);
@@ -1014,6 +1014,7 @@ function VariableImporter(){
         if(HTMLFile.exists){
             HTMLFile.execute();
             if(cleanup){
+                $.sleep(1000);
                 HTMLFile.remove();
             }
         } else {
@@ -1057,8 +1058,8 @@ function VariableImporter(){
         if(os == "Mac"){
             openURL(BrowserActionURLStrings[item]);
         } else {
-            var keepHTML = false;
-            writeHTHMLFile(wrapInHTML('', wrapInScriptTags(wrapInScriptAction(BrowserActionURLStrings[item]))), keepHTML);
+            var discardHTML = false;
+            writeHTHMLFile(wrapInHTML('', wrapInScriptTags(wrapInScriptAction(BrowserActionURLStrings[item]))), discardHTML);
         }
     }
     function analyzeHeaderCell(cell, idx){
