@@ -4,7 +4,7 @@
 */
 
 /*
-    ============================= VARIABLE IMPORTER Version 7.0.1 ==============================
+    ============================= VARIABLE IMPORTER Version 7.0.3 ==============================
     By Vasily Hall
     e:
     vasily.hall@gmail.com
