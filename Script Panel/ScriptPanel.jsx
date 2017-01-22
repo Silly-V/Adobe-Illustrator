@@ -323,13 +323,13 @@ function ScriptPanel(){
         var canvas=canvasArea.graphics;
         var counter=obj.total;
         while(counter>=0){
-            for(all in obj){
+            for(var all in obj){
                 if(all.match(/\d{1,2}$/g) && all.match(/\d{1,2}$/g)==counter){
                     var thisShp=obj[all];
                     if(all.match('group')){
                         var ctr=obj[all].total;
                         while(ctr>=0){
-                            for(paths in obj[all]){
+                            for(var paths in obj[all]){
                                 if(paths.match(/\d{1,2}$/g) && paths.match(/\d{1,2}$/g)==ctr){
                                     drawPath(obj[all][paths]);
                                 }
@@ -624,7 +624,7 @@ function ScriptPanel(){
             return;
         }
         sf.open('r');
-        var scriptString = sf.read().replace("#target illustrator",'');
+        var scriptString = sf.read();
         sf.close();
 
         // Thanks to: https://forums.adobe.com/thread/287506?tstart=0
@@ -1633,7 +1633,7 @@ function ScriptPanel(){
             deselectEverything(this);
         }
         var sep = w.add('group'); sep.size = [200,4];
-        var g2_holder = w.add('group'); g2_holder.orientation = 'stack';
+        var g2_holder = w.add('group'); g2_holder.orientation = 'stacked';
         var g2 = g2_holder.add('group');
         var btn_min = g2.add('button', undefined, 'Min'); btn_min.size=[31,31];
         btn_min.helpTip='Minimize this palette';
