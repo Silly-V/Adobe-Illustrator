@@ -1,7 +1,7 @@
 /***
 {
 	"name" : "VariableImporter 8",
-	"scriptVersion" : "8.1.7",
+	"scriptVersion" : "8.1.8",
 	"note" : "This script helps to import .CSV and tab-delimited .TXT spreadsheets as Illustrator XML datasets.",
 	"author" : {
 		"by" : "Vasily Hall",
@@ -952,7 +952,7 @@ var SESSION = {
 	os : $.os.match('Windows') ? 'Windows' : 'Mac',
 	AIVersion : parseInt(app.version.split(/\./)[0]),
 	scriptName : "VariableImporter.jsx",
-	"scriptVersion" : "8.1.7",
+	"scriptVersion" : "8.1.8",
 	currentLoadedPresetName : "",
 	regexps : {
 		varRx : /variable_\d+_value/,
@@ -1030,7 +1030,7 @@ var SESSION = {
 					PRESETS[i] = tempObj;
 				}
 			}
-			if(settingsObj.hasOwnProperty("lastChosenDataFilePath")){
+			if(settingsObj.hasOwnProperty("lastChosenDataFilePath") && typeof(VI_MEMORY_SETTINGS) == "undefined"){
 				VI_MEMORY_SETTINGS.lastChosenDataFilePath = settingsObj["lastChosenDataFilePath"];
 			}
 			if(settingsObj.hasOwnProperty("WARNINGSETTINGS") && comparePropNames(settingsObj.WARNINGSETTINGS, WARNINGSETTINGS).resMsg == "All Found"){
