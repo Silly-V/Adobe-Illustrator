@@ -1,5 +1,5 @@
 ﻿/**
-* @@@BUILDINFO@@@ Recolor.jsx !Version! Tue Sep 26 2017 18:00:34 GMT-0500
+* @@@BUILDINFO@@@ Recolor.jsx !Version! Tue Sep 26 2017 22:55:16 GMT-0500
 */
 
 var script = (
@@ -152,9 +152,7 @@ var script = (
 		}
 		function applyStrokeProcessColor(artObj, processColor){
 			if(artObj.typename == "PathItem"){
-				if(artObj.stroked){
-					artObj.strokeColor = processColor;
-				}
+				artObj.strokeColor = processColor;
 			} else if(artObj.typename == "TextFrame"){
 				if(artObj.textRange.characterAttributes.strokeColor != "[NoColor]"){
 					artObj.textRange.characterAttributes.strokeColor = processColor;
@@ -165,9 +163,7 @@ var script = (
 		}
 		function applyFillProcessColor(artObj, processColor){
 			if(artObj.typename == "PathItem"){
-				if(artObj.filled){
-					artObj.fillColor = processColor;
-				}
+				artObj.fillColor = processColor;
 			} else if(artObj.typename == "TextFrame"){
 				artObj.textRange.characterAttributes.fillColor = processColor;
 			} else if(artObj.typename == "CompoundPathItem"){
@@ -177,9 +173,7 @@ var script = (
 
 		function applyStrokeSwatch(artObj, chosenSwatch){
 			if(artObj.typename == "PathItem"){
-				if(artObj.stroked){
-					artObj.strokeColor = chosenSwatch.color;
-				}
+				artObj.strokeColor = chosenSwatch.color;
 			} else if(artObj.typename == "TextFrame"){
 				if(artObj.textRange.characterAttributes.strokeColor != "[NoColor]"){
 					artObj.textRange.characterAttributes.strokeColor = chosenSwatch.color;
@@ -190,9 +184,7 @@ var script = (
 		}
 		function applyFillSwatch(artObj, chosenSwatch){
 			if(artObj.typename == "PathItem"){
-				if(artObj.filled){
-					artObj.fillColor = chosenSwatch.color;
-				}
+				artObj.fillColor = chosenSwatch.color;
 			} else if(artObj.typename == "TextFrame"){
 				artObj.textRange.characterAttributes.fillColor = chosenSwatch.color;
 			} else if(artObj.typename == "CompoundPathItem"){
