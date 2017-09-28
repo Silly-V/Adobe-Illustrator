@@ -120,7 +120,7 @@ function CreateCommandLayer(){
 	for (var i = 0; i < requiredHeaders.length; i++) {
 		thisRequiredHeader = requiredHeaders[i];
 		if(data[0].indexOf(thisRequiredHeader) == -1){
-			alert(thisRequiredHeader + " header is missing from data file.");
+			alert(thisRequiredHeader + " header is missing from data file. Must have each of these headers: " + requiredHeaders.join(", "));
 			return;
 		}
 		dataObj[thisRequiredHeader] = getColumnByHeader(data, thisRequiredHeader);
