@@ -161,6 +161,9 @@ var script = (
 				applyStrokeProcessColor(artObj.pathItems[0], processColor)
 			}
 		}
+		function getNoneSwatchColor(){
+			return app.activeDocument.swatches.getByName("[None]").color;
+		}
 		function applyFillProcessColor(artObj, processColor){
 			if(artObj.typename == "PathItem"){
 				artObj.fillColor = processColor;
@@ -194,7 +197,12 @@ var script = (
 		var actionsObj = {
 			APPLYCOLOR : function(artObj, param, sourceTextContent){
 				// param: STROKE, FILL, FILLANDSTROKE
-				var processColor = buildProcessColor(getColorNumbers(sourceTextContent));
+				var processColor;
+				if(sourceTextContent.trim() == "[None]"){
+					processColor = getNoneSwatchColor();
+				} else {
+					processColor = buildProcessColor(getColorNumbers(sourceTextContent));
+				}
 				if(param == "STROKE"){
 					applyStrokeProcessColor(artObj, processColor);
 				} else if(param == "FILL"){
