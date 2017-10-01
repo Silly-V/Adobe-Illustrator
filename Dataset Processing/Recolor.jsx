@@ -245,7 +245,7 @@ var script = (
 					if(!item.editable){
 						continue;
 					}
-					if(item.note == action["TARGETNOTE"]){
+					if(item.note.trim() == action["TARGETNOTE"]){
 						for(var all in action){
 							if(all != "SOURCETEXT" && all != "TARGETNOTE"){
 								param = action[all];
