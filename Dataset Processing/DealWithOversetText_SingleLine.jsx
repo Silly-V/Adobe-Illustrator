@@ -110,12 +110,12 @@ function DealWithOversetText_SingleLine() {
   }
   if (app.documents.length > 0) {
     var doc = app.activeDocument;
-    if (doc.activeDataSet == doc.dataSets[0]) {
+    if (doc.dataSets.length > 0 && doc.activeDataSet == doc.dataSets[0]) {
       recordFontSize();
     }
     resetAllTextBoxes();
     shrinkAllTextBoxes();
-    if (doc.activeDataSet == doc.dataSets[doc.dataSets.length - 1]) {
+    if (doc.dataSets.length > 0 && doc.activeDataSet == doc.dataSets[doc.dataSets.length - 1]) {
       removeTagsOnText();
     }
   }
