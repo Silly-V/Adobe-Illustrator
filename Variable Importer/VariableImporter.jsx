@@ -1,7 +1,7 @@
 /***
 {
 	"name" : "VariableImporter 8",
-	"scriptVersion" : "8.1.9",
+	"scriptVersion" : "8.1.10",
 	"note" : "This script helps to import .CSV and tab-delimited .TXT spreadsheets as Illustrator XML datasets.",
 	"author" : {
 		"by" : "Vasily Hall",
@@ -199,6 +199,22 @@ function unCamelCaseSplit(str){
   return newStr;
 };
 
+Number.prototype.padZero = function(decimals){
+  if(typeof decimals == "undefined"){
+    decimals = 2;
+  }
+  var numStr = this.toString();
+  var decimalsFound = numStr.length;
+  if(decimalsFound >= decimals){
+    return this;
+  }
+  while(decimalsFound < decimals){
+    numStr = '0' + numStr;
+    decimalsFound += 1;
+  }
+  return numStr;
+};
+
 function writeImageFile(binary, dest){
   if(!dest instanceof "File"){
     dest = File(dest);
@@ -292,7 +308,7 @@ var CSV = {
       for (c = 0, cc = table[r].length; c < cc; ++c) {
         if (c) { csv += splitter; }
         cell = replacer(r, c, table[r][c]);
-        var rx = new RegExp("["+splitter+"\\r"+"\\n\"");
+        var rx = new RegExp("[" + splitter + "]\\r" + "\\n\"");
         if (rx.test(cell)) { cell = '"' + cell.replace(/"/g, '""') + '"'; }
         csv += (cell || 0 === cell) ? cell : '';
       }
@@ -307,18 +323,25 @@ function getTextData(dataFile){
   var type = dataFileName.match(/(\.txt$|\.csv$)/i)[0].toLowerCase();
   var splitter = (type == '.txt')? '\t' : ',';
   df.open('r');
-  var everyRowRaw = CSV.parse(df.read(), undefined, splitter);
+  var fileContents = df.read();
+  var firstRow = fileContents.split(/[\r\n]/g)[0];
+  if(firstRow != null && splitter != "\t"){
+    if(firstRow.indexOf(",") == -1 && firstRow.indexOf(";") > -1){
+      splitter = ";"; // For the .csv format: if the first row has no commas but has a semicolon, assume this is a semicolon-delimited .csv file
+    }
+  }
+  var everyRowRaw = CSV.parse(fileContents, undefined, splitter);
   df.close();
   
   var everyRow = [];
-  for(var i=0; i<everyRowRaw.length; i++){
+  for(var i = 0; i < everyRowRaw.length; i++){
     // get rid of empty rows
     var thisRawRow = everyRowRaw[i];
     if(!checkRowForAllBlanks(thisRawRow)){
       if(i > 0){
         if(thisRawRow.length < everyRow[0].length){
           var diff = everyRow[0].length - thisRawRow.length;
-          for(var d=0; d<diff; d++){
+          for(var d = 0; d < diff; d++){
             thisRawRow.push("");
           }
         }
@@ -339,7 +362,7 @@ function getData(filePath){
 };
 
 function checkRowForAllBlanks(row){
-  for(var i=0; i<row.length; i++){
+  for(var i = 0; i < row.length; i++){
     if(row[i] != ''){
       return false;
     }
@@ -952,7 +975,7 @@ var SESSION = {
 	os : $.os.match('Windows') ? 'Windows' : 'Mac',
 	AIVersion : parseInt(app.version.split(/\./)[0]),
 	scriptName : "VariableImporter.jsx",
-	"scriptVersion" : "8.1.9",
+	"scriptVersion" : "8.1.10",
 	currentLoadedPresetName : "",
 	regexps : {
 		varRx : /variable_\d+_value/,
