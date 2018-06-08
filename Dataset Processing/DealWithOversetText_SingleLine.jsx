@@ -12,7 +12,7 @@ function DealWithOversetText_SingleLine() {
       tag.name = defaultSizeTagName;
       tag.value = size;
     }
-  }
+  };
 
   function readFontSizeFromTag(art){
     var tag;
@@ -23,7 +23,7 @@ function DealWithOversetText_SingleLine() {
     } catch(e) {
       return null;
     }
-  }
+  };
 
   function recordFontSize() {
     var doc = app.activeDocument;
@@ -34,11 +34,18 @@ function DealWithOversetText_SingleLine() {
         recordFontSizeInTag(t.textRange.characterAttributes.size, t);
       }
     };
-  }
+  };
 
-  function isOverset(textBox) {
+  function isOverset(textBox, lineAmt) {
     if (textBox.lines.length > 0) {
-      if (textBox.lines[0].characters.length < textBox.characters.length) {
+      var charactersOnVisibleLines = 0;
+      if(typeof(lineAmt) != "undefined"){
+        lineAmt = 1;
+      }
+      for (var i = 0; i < lineAmt; i++) {
+        charactersOnVisibleLines += textBox.lines[i].characters.length;
+      }
+      if (charactersOnVisibleLines < textBox.characters.length) {
         return true;
       } else {
         return false;
@@ -46,7 +53,7 @@ function DealWithOversetText_SingleLine() {
     } else if (textBox.characters.length > 0) {
       return true;
     }
-  }
+  };
 
   function shrinkFont(textBox) {
     var totalCharCount = textBox.characters.length;
@@ -65,7 +72,7 @@ function DealWithOversetText_SingleLine() {
         textBox.textRange.characterAttributes.size -= inc;
       }
     }
-  }
+  };
 
   function resetSize(textAreaBox) {
     var t = textAreaBox;
@@ -78,7 +85,7 @@ function DealWithOversetText_SingleLine() {
         t.textRange.characterAttributes.size = size;
       }
     }
-  }
+  };
 
   function removeTagsOnText(){
     var doc = app.activeDocument;
@@ -89,7 +96,7 @@ function DealWithOversetText_SingleLine() {
 
       }
     }
-  }
+  };
 
   function resetAllTextBoxes() {
     for (var i = 0; i < doc.textFrames.length; i++) {
@@ -98,7 +105,7 @@ function DealWithOversetText_SingleLine() {
         resetSize(t);
       }
     };
-  }
+  };
 
   function shrinkAllTextBoxes() {
     for (var i = 0; i < doc.textFrames.length; i++) {
@@ -107,7 +114,7 @@ function DealWithOversetText_SingleLine() {
         shrinkFont(t);
       }
     };
-  }
+  };
   if (app.documents.length > 0) {
     var doc = app.activeDocument;
     if (doc.dataSets.length > 0 && doc.activeDataSet == doc.dataSets[0]) {
@@ -120,5 +127,5 @@ function DealWithOversetText_SingleLine() {
     }
   }
   return true;
-}
+};
 DealWithOversetText_SingleLine();
