@@ -349,16 +349,12 @@ function getFolderScriptObjs(folderPath){
       thisJsx.open('r');
       var str = thisJsx.read();
 
-      var targetRx = /^#target\s+/;
+      // may need to quote-proof in future
+      var targetRx = /#target\s[a-z]+/;
       if(str.match(targetRx)){
-        obj.targetApp = str.replace(targetRx, "");
+        obj.targetApp = str.match(targetRx)[0].replace("#target ", "");
       }
-      // starting in CC2018, having #targetengine both in this panel and in the target script cases problems.
-      // dealing with this 6/8/2018 by removing that string from target script.
-      var targetEngineRx = /^#targetengine.+/;
-      if(str.match(targetEngineRx)){
-        str = str.replace(targetEngineRx, "");
-      }
+
       // property object follows this syntax:
       /***
         {
@@ -454,7 +450,7 @@ function runScriptFromFile(file){
   var thisScriptLine;
   for (var i = 0; i < scriptStringLines.length; i++) {
     thisScriptLine = scriptStringLines[i];
-    if(thisScriptLine.match(/^#target/)){
+    if(thisScriptLine.match(/^#target /)){
       firstFoundTargetDirective = thisScriptLine.replace("#target ", "").replace(/\s/g, "");
     }
   }
@@ -868,7 +864,7 @@ var SETTINGS = {
 var SESSION = {
   os : $.os.match('Windows') ? 'Windows' : 'Mac',
   AIVersion : parseInt(app.version.split(/\./)[0]),
-  "scriptVersion" : "1.2.1",
+  "scriptVersion" : "1.2.2",
   dataFileMask : function(){
     return (this.os == 'Windows')? "*.txt;*.TXT;*.csv;*.CSV;" : function(f){
       return f instanceof Folder || (f instanceof File && decodeURI(f.name).match(/(\.txt|\.csv)$/i));

@@ -1,7 +1,7 @@
 /***
 {
 	"name" : "VariableImporter 8",
-	"scriptVersion" : "8.1.10",
+	"scriptVersion" : "8.1.11",
 	"note" : "This script helps to import .CSV and tab-delimited .TXT spreadsheets as Illustrator XML datasets.",
 	"author" : {
 		"by" : "Vasily Hall",
@@ -975,7 +975,7 @@ var SESSION = {
 	os : $.os.match('Windows') ? 'Windows' : 'Mac',
 	AIVersion : parseInt(app.version.split(/\./)[0]),
 	scriptName : "VariableImporter.jsx",
-	"scriptVersion" : "8.1.10",
+	"scriptVersion" : "8.1.11",
 	currentLoadedPresetName : "",
 	regexps : {
 		varRx : /variable_\d+_value/,
@@ -2581,7 +2581,8 @@ function filePathInput(parent, title, dialogTitle, fileSpec){
 		var f;
 		if(typeof(VI_MEMORY_SETTINGS) != "undefined"){
 			if(File(VI_MEMORY_SETTINGS.lastChosenDataFilePath).exists){
-				f = File(File(VI_MEMORY_SETTINGS.lastChosenDataFilePath).parent + "/" + "VariableImporterDataFile.csv").openDlg(dialogTitle, fileSpec, false);
+				/* no extension on dummy file, because that disables .txt files */
+				f = File(File(VI_MEMORY_SETTINGS.lastChosenDataFilePath).parent + "/" + "VariableImporterDataFile").openDlg(dialogTitle, fileSpec, false);
 			} else {
 				f = File.openDialog(dialogTitle, fileSpec);	
 			}
