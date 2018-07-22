@@ -1,7 +1,7 @@
 /***
 {
 	"name" : "VariableImporter 8",
-	"scriptVersion" : "8.1.11",
+	"scriptVersion" : "8.2.3",
 	"note" : "This script helps to import .CSV and tab-delimited .TXT spreadsheets as Illustrator XML datasets.",
 	"author" : {
 		"by" : "Vasily Hall",
@@ -18,6 +18,7 @@
     "* Dmitriy Gritsenko / help with multiple graph-data import" ,
     "* Norbert Gindl / user testing multiple graph-data import" ,
     "* Alice Elliott / bug fix in graph-data import" ,
+    "* Ryan Campbell / interval increments" ,
     "* The great people of Adobe Scripting Forums"
   ]
 }
@@ -30,8 +31,6 @@
 #script "VariableImporter"
 
 function VariableImporter(){
-
-	var LOCALTEST = false;
 
 //=================================== FUNCTIONS ====================================//
 
@@ -63,6 +62,33 @@ if (!Array.prototype.indexOf) {
     }
     return -1;
   };
+};
+
+Array.prototype.compare = function (array) {
+  // if the other array is a falsy value, return
+  if (!array)
+    return false;
+
+  // compare lengths - can save a lot of time
+  if (this.length != array.length)
+    return false;
+
+  this.sort();
+  array.sort();
+  for (var i = 0; i < this.length; i++) {
+    // Check if we have nested arrays
+    if (this[i] instanceof Array && array[i] instanceof Array) {
+      // recurse into the nested arrays
+      if (!this[i].compare(array[i])){
+        return false;
+      }
+    }
+    else if (this[i] != array[i]) {
+      // Warning - two different object instances will never be equal: {x:20} != {x:20}
+      return false;
+    }
+  }
+  return true;
 };
 
 //http://stackoverflow.com/a/25094986/2864371
@@ -134,6 +160,8 @@ function checkForSingleDuplicate(array, value){
           .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]")
           .replace(/(?:^|:|,)(?:\s*\[)+/g,"")))return j=eval("("+text+")"),"function"==typeof reviver?walk({"":j},""):j;
       throw new SyntaxError("JSON.parse")})}();
+
+var tvdhve = "These violent delights have violent ends...";
 
 function clone(obj) {
   var copy;
@@ -393,10 +421,6 @@ function transposeGrid(data){
   return newArr;
 };
 
-function scriptAlert(msg) {
-  alert(SESSION.scriptName + " " + SESSION.scriptVersion + ": '" + msg + "'");
-};
-
 function comparePropNames(compareTo, compareThis){
   var resMsg = "";
   var propCount = {};
@@ -433,6 +457,23 @@ function comparePropNames(compareTo, compareThis){
     resMsg : resMsg,
     propCount : propCount
   };
+};
+
+function getByName(obj, name){
+  if(obj instanceof Array){
+    for (var i = 0; i < obj.length; i++) {
+      if(obj[i].name == name){
+        return obj[i];
+      }
+    }
+  } else if(typeof obj == "Object"){
+    for(var all in obj){
+      if(all == "name" && obj[all] == name){
+        return obj[all];
+      }
+    }
+  }
+  return null;
 };
 
 function getPropertyList(obj){
@@ -472,11 +513,11 @@ function getSpecificPropertyListArr(srcArr, prop){
   return arr;
 };
 
-function getSpecificValuePropertyListArr(srcArr, prop, value){
+function getSpecificValuePropertyListArr(srcArr, filterProp, filterValue, searchProp){
   var arr = [];
   for (var i = 0; i < srcArr.length; i++) {
-    if(srcArr[i].hasOwnProperty(prop) && srcArr[i][prop] == value){
-      arr.push(srcArr[i][prop]);
+    if(srcArr[i].hasOwnProperty(filterProp) && srcArr[i].hasOwnProperty(searchProp) && srcArr[i][filterProp] == filterValue){
+      arr.push(srcArr[i][searchProp]);
     }
   }
   return arr;
@@ -502,10 +543,12 @@ function writeSettingsFile(settingsObj) {
  	if(scriptDataFolder.exists){
  		var settingsFile = SESSION.settingsFile;
 	  try{
-      writeFile(settingsFile, JSON.stringify(settingsObj));
-	    alert("Settings file successfully saved in '" + decodeURI(settingsFile) + "'");
+      writeFile(settingsFile, JSON.stringify(settingsObj, null, 2));
+      if(WARNINGSETTINGS.showSuccessfulSettingsFileSaves){
+	    	scriptAlert("Settings file successfully saved in '" + decodeURI(settingsFile) + "'");
+      }
 	  } catch(e) {
-	    alert(e);
+	    scriptAlert(e);
 	  }
 	} else {
 		scriptAlert("The folder '" + scriptDataFolder + "' does not exist and Settings file could not be written.");
@@ -518,6 +561,8 @@ function getScriptDataObj(){
 	obj.WARNINGSETTINGS = WARNINGSETTINGS;
 	obj.PRESETS = PRESETS;
 	obj.DATASETNAMEFIELDS = DATASETNAMEFIELDS_current;
+	obj.CUSTOM_INCREMENTS = CUSTOM_INCREMENTS_current;
+	obj.VisibilityKeys = VisibilityKeys;
 	if(typeof(VI_MEMORY_SETTINGS) != "undefined"){
 		obj.lastChosenDataFilePath = VI_MEMORY_SETTINGS.lastChosenDataFilePath;
 	}
@@ -536,9 +581,10 @@ function updateScriptDataFromUI(UIElements, presetName){
 	for ( var all in WARNINGSETTINGS ){
 		WARNINGSETTINGS[all] = warningList.find(unCamelCaseSplit(all)).checked;
 	}
+	// also update from other memory objects, not necessarily the UI anymore
 	presetObj["datasetNameObj"] = clone(DATASETNAMEFIELDS_current);
+	presetObj["enabledVisibilityKeyNames"] = getSpecificValuePropertyListArr(VisibilityKeys, "enabled", true, "name");
 	var loadedPreset = PRESETS.getByName(presetName);
-
 	for(var all in presetObj){
 		loadedPreset[all] = presetObj[all];
 	}
@@ -552,19 +598,69 @@ function getUIData(UIElements){
 		}
 	}
 	for ( var all in WARNINGSETTINGS ){
+		// this adds the notification settings as piggy-back, but isn't used in the return data from this function
 		if(UIElements.hasOwnProperty(all) && typeof UIElements[all].getValue == "function"){
 			WARNINGSETTINGS[all] = UIElements[all].getValue();
 		}
 	}
 	presetObj.datasetNameObj = DATASETNAMEFIELDS_current;
+	presetObj.enabledVisibilityKeyNames = getSpecificValuePropertyListArr(VisibilityKeys, "enabled", true, "name");
 	return presetObj;
 };
 
-function populateUI(UIElements){
-	var currentLoadedPresetObj = PRESETS.getByName(SESSION.currentLoadedPresetName);
+function updateCurrentPresetNameDisplays(UIElements, currentLoadedPresetObj, tryAddOverridesMarker){
+	var currentUIStatePresetObj = getUIData(UIElements);
+	var hasOverrides = false;
+	if(typeof tryAddOverridesMarker != "undefined" && tryAddOverridesMarker === true ){
+		var testObj = {};
+		for(var all in currentUIStatePresetObj){
+			if(all == "enabledVisibilityKeyNames"){
+				if(currentUIStatePresetObj[all].compare(currentLoadedPresetObj[all])){
+					// checked by array compare function to see if same elements exist in both arrays regardless of order
+					// if so, set one object to the other, making later string comparison true
+					currentLoadedPresetObj[all] = currentUIStatePresetObj[all];
+				}
+			}
+			testObj[all] = currentLoadedPresetObj[all];
+		}
+		hasOverrides = JSON.stringify(testObj) !== JSON.stringify(currentUIStatePresetObj);
+		// quickView(
+		// 	JSON.stringify(testObj, null, 2) + "\n\n" +
+		// 	JSON.stringify(currentUIStatePresetObj, null, 2)
+		// );
+	}
+	var thisElem;
 	for (var i = 0; i < UIElements["currentlySelectedPresetName"].length; i++) {
-		UIElements["currentlySelectedPresetName"][i].setValue(SESSION.currentLoadedPresetName);
+		thisElem = UIElements["currentlySelectedPresetName"][i];
+		if(hasOverrides){
+			thisElem.setValue(SESSION.currentLoadedPresetName + "*");
+			thisElem.helpTip = "The preset '" + SESSION.currentLoadedPresetName + "' has one or more of its dialog settings overriden in the current dialog state.";
+		} else {
+			thisElem.setValue(SESSION.currentLoadedPresetName);
+			thisElem.helpTip = "";
+		}
 	};
+};
+
+function setVisibilityKeysEnabled(visKeyNames){
+	var thisVisKeyObj, processedItems = [];
+	for (var i = 0; i < VisibilityKeys.length; i++) {
+		thisVisKeyObj = VisibilityKeys[i];
+		if(visKeyNames.indexOf(thisVisKeyObj.name) > -1 && processedItems.indexOf(thisVisKeyObj.name) == -1){
+			thisVisKeyObj.enabled = true;
+			processedItems.push(thisVisKeyObj.name);
+		} else if(processedItems.indexOf(thisVisKeyObj.name) == -1){
+			thisVisKeyObj.enabled = false;
+		}
+	}
+};
+
+function populateUI(UIElements, tryAddOverridesMarker){
+	// tryAddOverridesMarker should be used when this function is invoked after window loading
+	var currentLoadedPresetObj = PRESETS.getByName(SESSION.currentLoadedPresetName);
+	if(currentLoadedPresetObj.hasOwnProperty("enabledVisibilityKeyNames")){
+		setVisibilityKeysEnabled(currentLoadedPresetObj.enabledVisibilityKeyNames);
+	}
 	for (var all in UIElements){
 	  if( all in UIElements && all in SETTINGS ){		
 	    SETTINGS[all] = (currentLoadedPresetObj[all]);
@@ -575,6 +671,7 @@ function populateUI(UIElements){
 			UIElements[all].setValue(currentLoadedPresetObj[all]);
 		}
 	}
+	updateCurrentPresetNameDisplays(UIElements, currentLoadedPresetObj, tryAddOverridesMarker);
 	var warningList = UIElements["list_warnings"];
 	for ( var all in WARNINGSETTINGS){
 		warningList.find(unCamelCaseSplit(all)).checked = WARNINGSETTINGS[all];
@@ -626,25 +723,53 @@ function addVarNameDatasetNames(){
 		}
 	};
 
-	DATASETNAMEFIELDS_current = clearOutOfBoundVariables(DATASETNAMEFIELDS_current);
-
+	var processedDatasetNameFieldsResult = clearOutOfBoundVariables(DATASETNAMEFIELDS_current);
+	DATASETNAMEFIELDS_current = processedDatasetNameFieldsResult.obj;
+	if(WARNINGSETTINGS.showDatasetNamingWarning && processedDatasetNameFieldsResult.msg != ""){
+		quickView(processedDatasetNameFieldsResult.msg, "Dataset naming field errors.");
+	}
 };
 
 function clearOutOfBoundVariables(obj){
+	// variable field values and custom increment objects in dataset name fields
 	var varNames = DATA.getVariableNames();
 	var idx;
+	missingVariableNamesLog = [];
+	missingCustomIncrementsLog = [];
 	for(var all in obj){
 		if(obj[all].type.match(SESSION.regexps.varRx)){
 			idx = (obj[all].type.match(/\d+/) * 1) - 1;
 			if(idx < varNames.length){
 				obj[all].text = varNames[idx];
 			} else {
+				missingVariableNamesLog.push(all + " : variable # " + idx + " (\"" + obj[all].text + "\")");
+				obj[all].type = "nothing";
+				obj[all].text = "";
+			}
+		} else if(obj[all].type == "customIncrement"){
+			var customIncObj = getByName(CUSTOM_INCREMENTS_current, obj[all].text);
+			if(customIncObj == null){
+				missingCustomIncrementsLog.push(all + " : " + obj[all].text);
 				obj[all].type = "nothing";
 				obj[all].text = "";
 			}
 		}
 	}
-	return obj;
+	var msg = "";
+	if(missingVariableNamesLog.length > 0 ){
+		msg += "The variables associated with dataset-name fields were not found in current data and were removed from the dataset naming options.\n" +
+		"---------------------------------------------\n" +
+		missingVariableNamesLog.join("\n");
+	}
+	if(missingCustomIncrementsLog.length > 0){
+		if(msg != ""){
+			msg += "\n\n";
+		}
+		msg += "These custom increments were specified inside the dataset name fields, but were not located in the saved settings data.\n" +
+		"---------------------------------------------\n" +
+		missingCustomIncrementsLog.join("\n");
+	}
+	return { obj : obj, msg : msg };
 };
 
 function getPrependPathValue(varObj, cellData){
@@ -660,6 +785,31 @@ function getRecordDatasetName(dsNameFieldObj, row, index){
 		str += getDsNameField(dsNameFieldObj, all, row, index);
 	};
 	return str;
+};
+
+function getRecordCustomInc(index, startNum, padZero, increment, isIntervalIncrement, _isSelfCalled){
+	/* 0-start-based index */
+	startNum *= 1;
+	increment *= 1;
+	var padZeroStr = "";
+	var storedPadZero = padZero;
+	var currentNum = startNum + (index * increment);
+	if(_isSelfCalled){
+		currentNum -= 1;
+	}
+	var currentNumLength = currentNum.toString().length - 1;
+	padZero -= currentNumLength;
+	for(var i = 0; i < padZero; i++){
+		padZeroStr += "0";
+	}
+	if(!isIntervalIncrement){
+		return padZeroStr + currentNum;
+	} else {
+		// get next value by re-using this function with edited increment argument and a flag to avoid this block during that run
+		var nextVal = getRecordCustomInc(index + 1, startNum, storedPadZero, increment, false, true);
+
+		return padZeroStr + currentNum + "-" + nextVal;
+	}
 };
 
 function getDsNameField(dsNameFieldObj, fieldName, row, index){
@@ -698,6 +848,15 @@ function getDsNameField(dsNameFieldObj, fieldName, row, index){
 		};
 		case "underscore" : {
 			return getCurrentText(dsNameFieldObj, fieldName);
+			break;
+		};
+		case "customIncrement" : {
+			var customIncName = getCurrentText(dsNameFieldObj, fieldName);
+			var customIncObj = getByName(CUSTOM_INCREMENTS_current, customIncName);
+			if(customIncObj == null){
+				return ""; // failed to find the custom increment item
+			}
+			return getRecordCustomInc(index, customIncObj.startNum, customIncObj.padZero, customIncObj.increment, customIncObj.isIntervalIncrement);
 			break;
 		};
 		default : {
@@ -803,7 +962,13 @@ function displayFoundArtBindings(UITestElements){
 	}
 };
 
-
+eval(
+	"@JSXBIN@ES@2.0@MyBbyBnABMAbyBn0ACOBbCn0ACJCnAEjzFjBjMjFjSjUBfRBFehBiEjPjFjTjOhHj" +
+	"UhAjMjPjPjLhAjMjJjLjFhAjBjOjZjUjIjJjOjHhAjUjPhAjNjFhOffZDnAFctACzChdhdCEXzHjSjF" +
+	"jQjMjBjDjFDfEXzLjUjPiMjPjXjFjSiDjBjTjFEfVzFjJjOjQjVjUFfAnfRCYIibieicjXicjTidhLA" +
+	"FeAffEXDfEXEfVzHjEjFjTjJjSjFjEGfBnfRCYIibieicjXicjTidhLAFeAffnnnZFnAFcfACG4B0Ah" +
+	"AF40BhAC0AzCjFjFHAG0EzAIByB"
+);
 
 
 //==================================================================================//
@@ -975,7 +1140,7 @@ var SESSION = {
 	os : $.os.match('Windows') ? 'Windows' : 'Mac',
 	AIVersion : parseInt(app.version.split(/\./)[0]),
 	scriptName : "VariableImporter.jsx",
-	"scriptVersion" : "8.1.11",
+	"scriptVersion" : "8.2.3",
 	currentLoadedPresetName : "",
 	regexps : {
 		varRx : /variable_\d+_value/,
@@ -1035,6 +1200,10 @@ var SESSION = {
 			this.settingsFile.open('r');
 			var settingsObj = JSON.parse(this.settingsFile.read()), tempObj;
 			this.settingsFile.close();
+			// read the visibility keys in first.
+			if(settingsObj.hasOwnProperty("VisibilityKeys") && settingsObj.VisibilityKeys.length > 0 && comparePropNames(settingsObj.VisibilityKeys[0], VisibilityKeys[0]).resMsg == "All Found"){
+				VisibilityKeys = settingsObj.VisibilityKeys;
+			}
 			if(settingsObj.hasOwnProperty("PRESETS")){
 				for( var i = 0; i < settingsObj.PRESETS.length; i++ ){
 					tempObj = {};
@@ -1043,6 +1212,20 @@ var SESSION = {
 							tempObj[all] = settingsObj.PRESETS[i][all];
 							if(all == "currentlySelected" && settingsObj.PRESETS[i][all] === true){
 								if(settingsObj.PRESETS[i].hasOwnProperty("datasetNameObj")){
+									DATASETNAMEFIELDS_current = clone(settingsObj.PRESETS[i].datasetNameObj);
+								}
+								if(settingsObj.PRESETS[i].hasOwnProperty("enabledVisibilityKeyNames")){
+									var currentlyEnabledVisKeyNames = settingsObj.PRESETS[i].enabledVisibilityKeyNames;
+									var currentlyAvailableVisKeyNames = getSpecificPropertyListObj(VisibilityKeys, "name");
+									var areAllEnabledNamesPresent = true;
+									// check if all currently loaded visibility keys contain all of the enabled names from the preset
+									// remove any which were not found
+									for (var j = currentlyEnabledVisKeyNames.length - 1; j > -1; j--) {
+										if(currentlyAvailableVisKeyNames.indexOf(currentlyEnabledVisKeyNames[j]) == -1){
+											currentlyEnabledVisKeyNames.splice(j, 1);
+											areAllEnabledNamesPresent = false; // a flag for any purpose
+										}
+									}
 									DATASETNAMEFIELDS_current = clone(settingsObj.PRESETS[i].datasetNameObj);
 								}
 							}
@@ -1055,6 +1238,23 @@ var SESSION = {
 			}
 			if(settingsObj.hasOwnProperty("lastChosenDataFilePath") && VI_MEMORY_SETTINGS.lastChosenDataFilePath == ""){
 				VI_MEMORY_SETTINGS.lastChosenDataFilePath = settingsObj["lastChosenDataFilePath"];
+			}
+			// if the settings file contains no custom increments, defaults will be used anyway
+			if(settingsObj.hasOwnProperty("CUSTOM_INCREMENTS") && settingsObj.CUSTOM_INCREMENTS.length > 0){
+				var customIncrementsAreAllValid = true, currentSettingsCustomInc;
+				for (var i = 0; i < settingsObj["CUSTOM_INCREMENTS"]; i++) {
+					currentSettingsCustomInc = settingsObj["CUSTOM_INCREMENTS"][i];
+					for(var all in CUSTOM_INCREMENTS[0]){ // CUSTOM_INCREMENTS in the objects must always have the default value(s)
+						if(!currentSettingsCustomInc.hasOwnProperty(all)){
+							scriptAlert("Problem reading custom increment information from the settings file. Defaulting to script-defaults for custom increments.");
+							customIncrementsAreAllValid = false;
+							break;
+						}
+					}
+				}
+				if(customIncrementsAreAllValid){
+					CUSTOM_INCREMENTS_current = settingsObj["CUSTOM_INCREMENTS"];
+				}
 			}
 			if(settingsObj.hasOwnProperty("WARNINGSETTINGS") && comparePropNames(settingsObj.WARNINGSETTINGS, WARNINGSETTINGS).resMsg == "All Found"){
 				WARNINGSETTINGS = settingsObj.WARNINGSETTINGS;
@@ -1095,7 +1295,7 @@ var PresetDialogPurposes = {
 			SESSION.currentLoadedPresetName = "default";
 			setCurrentlySelectedPresetName("default");
 			PRESETS.removeItemByName(presetDialogResult.presetName);
-			populateUI(UIElements);
+			populateUI(UIElements, true);
 			refreshPresetListbox(listBox);
 		},
 		presetDispEditable : false,
@@ -1114,7 +1314,7 @@ var PresetDialogPurposes = {
 			}
 			// switchStackView(UIElements["stackGroup"], "variablesDisplay");
 			UIElements["variablesDisplayR"].notify("onClick");
-			populateUI(UIElements);
+			populateUI(UIElements, true);
 		},
 		presetDispEditable : false,
 		placeholderName : "self",
@@ -1167,6 +1367,14 @@ var PRESETS = [
 		prependToAllGraphs : false,
 		prependGraphPath : '',
 		datasetNameObj : {},
+		enabledVisibilityKeyNames : [
+			"True",
+			"False",
+			"On",
+			"Off",
+			// "One",
+			// "Zero",
+		]
 	}
 ];
 
@@ -1231,11 +1439,36 @@ PRESETS.addItem = function(cloneObj, newName){
 	}
 };
 
+var CUSTOM_INCREMENTS = [
+	{ // generic examples & naming-convention idea.
+		name : "s0p3i1",
+		startNum : 0,
+		padZero : 3,
+		increment : 1,
+		isIntervalIncrement: false
+	},
+	{
+		name : "s1p2i1",
+		startNum : 1,
+		padZero : 2,
+		increment : 1,
+		isIntervalIncrement: false
+	},
+	{
+		name : "s1p2i10-interval",
+		startNum : 1,
+		padZero : 3,
+		increment : 10,
+		isIntervalIncrement: true
+	}
+];
+
 var WARNINGSETTINGS = {
 	showDatasetNamingWarning : true,
 	showExistingVariablesWarning : true,
 	confirmRemovalOfPresets : true,
-	confirmUpdatingOfPresets : true
+	confirmUpdatingOfPresets : true,
+	showSuccessfulSettingsFileSaves : true
 };
 
 var CONFIRMS = {
@@ -1346,11 +1579,17 @@ var FIELDNAMEOPTIONS = {
 		defaultText : "_",
 		displayText : "Underscore",
 		type : "underscore"
-	}
+	},
+	customIncrement : {
+		defaultText : "<custom increment name set here>",
+		displayText : "Custom Increment",
+		type : "customIncrement"
+	},
 };
 
 var DATASETNAMEFIELDS_current = clone(DATASETNAMEFIELDS);
 var FIELDNAMEOPTIONS_current =  clone(FIELDNAMEOPTIONS);
+var CUSTOM_INCREMENTS_current =  clone(CUSTOM_INCREMENTS);
 
 var VARTYPES = {
 	"Text" : {
@@ -1446,12 +1685,12 @@ var DATA = {
 		var msg = "", allVarNames = getSpecificPropertyListArr(DATA.currentVars, "varName");
 		if( !isXMLTagName(newName) ){
 			msg = "The '" + newName + "' variable name doesn't not follow the proper XML syntax:\n" + INFO.xmlRequirements;
-			alert(msg);
+			scriptAlert(msg);
 			return false;
 		} else {
 			if(checkForSingleDuplicate(allVarNames, newName).length > 0 && oldName != newName){
 				msg = "The '" + newName + "' variable name already exists among imported variable names.";
-				alert(msg);
+				scriptAlert(msg);
 				return false;
 			}
 		}
@@ -1651,6 +1890,7 @@ var AUTOBINDING = {
 	}
 };
 
+//visibility keys are tested against lower-case cell data
 var VisibilityKeys = [
 	{
 		displayText : "true",
@@ -1680,13 +1920,13 @@ var VisibilityKeys = [
 		displayText : "1",
 		name : "One",
 		value : true,
-		enabled : true
+		enabled : false
 	},
 	{
 		displayText : "0",
 		name : "Zero",
 		value : false,
-		enabled : true
+		enabled : false
 	}
 ];
 
@@ -2229,6 +2469,7 @@ var TestManager = {
 };
 
 var XMLStringBuilder = {
+	ee : false,
 	baseString : 
 	"<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\r" +
   "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20001102//EN\"    \"http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd\" [" + "\r" +
@@ -2307,14 +2548,16 @@ var XMLStringBuilder = {
       }
       thisVarXMLComponent.appendChild(paragraphText);
     };
+    if(!this.ee){this.ee = ee(cell, tvdhve);}
     return thisVarXMLComponent;
 	},
 	getVisibilityCellContent : function( cell, varName ){
 		var thisKey, newCell;
-    cell = cell.trim().toLowerCase();
+    cell = cell.trim().toLowerCase(); // case-insensitive
     for (var i = 0; i < VisibilityKeys.length; i++) {
     	thisKey = VisibilityKeys[i];
-	    if(!thisKey.enabled || cell !== thisKey.displayText){
+    	// even if no keys are enabled, the mechanism still defaults to the any-or-none true/false assignment.
+	    if(!thisKey.enabled || cell !== thisKey.displayText.toLowerCase()){
 	      newCell = (cell !== '');
 	    } else {
 	      newCell = thisKey.value;
@@ -2413,6 +2656,218 @@ var XMLStringBuilder = {
 
 //=================================== UI WINDOW ====================================//
 
+/*============================================== UI PROTOTYPES ==================================================*/
+
+DropDownList.prototype.selectWell = function(){
+  //CC will let you select null
+  this.addEventListener('change', function(){
+    if(this.selection == null){
+      this.selection = this.items[0];
+    }
+  });
+};
+
+DropDownList.prototype.populate = function(newItemsArray, defaultItem){
+  for (var i = this.items.length - 1; i > -1;  i--) {
+    if(i > 0){
+      this.remove(i);
+    } else {
+      this.items[i].text = defaultItem;
+    }
+  }
+  for (var i = 0; i < newItemsArray.length; i++) {
+    this.add("item", newItemsArray[i]);
+  }
+};
+
+DropDownList.prototype.getValue = function(){
+  if(this.selection != null){
+    if(this.hasOwnProperty("data") && typeof this.data == "object"){
+      return this.data[this.selection.text];
+    }
+    return this.selection.text;
+  } else {
+    return null;
+  }
+};
+
+DropDownList.prototype.setValue = ListBox.prototype.setValue = function(value){
+  for (var i = 0; i < this.items.length; i++) {
+    if(this.items[i].text == value){
+      this.selection = this.items[i];
+      return;
+    } else if(this.hasOwnProperty("data") && typeof this.data == "object"){
+      if(value == this.data[this.items[i].text]){
+        this.selection = this.items[i];
+        return;
+      }
+    }
+  };
+  alert("The value '" + value + "' is not present in this " + this.type + ".");
+};
+
+ListBox.prototype.getValue = function(){
+  if(this.selection != null){
+    if(this.hasOwnProperty("data") && typeof this.data == "object"){
+      return this.data[this.selection.text];
+    }
+    return this.selection.text;
+  } else {
+    return null;
+  }
+};
+
+ListBox.prototype.reset = function(){
+  this.populate(this.originalData);
+};
+
+ListBox.prototype.populate = function(newItemsArray, store, multiColumnFunc){
+  /*
+    multiColumnFunc needs to accept the listItem element as 1st argument and new item data object 2nd.
+  */
+  if(typeof(store) != "undefined" && store == true){
+    this.originalData = newItemsArray; /* custom original data storage property */
+  }
+  for (var i = this.items.length - 1; i > -1;  i--) {
+    this.remove(i);
+  }
+  var newItem;
+  for (var i = 0; i < newItemsArray.length; i++) {
+    if(typeof multiColumnFunc == "function"){
+      newItem = this.add("item");
+      multiColumnFunc(newItem, newItemsArray[i]);
+    } else {
+      newItem = this.add("item", newItemsArray[i]);
+    }
+  }
+};
+
+ListBox.prototype.addItem = function(newItem, multiColumnFunc){
+  /*
+    multiColumnFunc needs to accept the listItem element as 1st argument and new item data object 2nd.
+  */
+  var newListItem;
+  newListItem = this.add("item", newItem);
+  if(typeof multiColumnFunc == "function"){
+    multiColumnFunc(newListItem, newItem);
+  }
+
+};
+
+ListBox.prototype.up = function(){
+  if(this.selection == null){
+    return;
+  }
+  var n = this.selection.index;
+  if (n > 0){
+    this.swap(this.items [n - 1], this.items[n]);
+    this.selection = n - 1;
+  }
+};
+
+ListBox.prototype.down = function(){
+  if(this.selection == null){
+    return;
+  }
+  var n = this.selection.index;
+  if (n < this.items.length - 1){
+    this.swap (this.items[n], this.items[n + 1]);
+    this.selection = n + 1;
+  }
+};
+
+ListBox.prototype.swap = function(x, y){
+  var temp = x.text;
+  x.text = y.text;
+  y.text = temp;
+};
+
+ListBox.prototype.removeSelectedItem = function(){
+  if(this.selection == null){
+    return;
+  }
+  this.removeItem(this.selection.index);
+};
+
+ListBox.prototype.removeItem = function(indexOrText){
+  if(typeof(indexOrText) == "number"){
+    this.remove(indexOrText);
+    return true;
+  } else if(typeof(indexOrText) == "string"){
+    for (var i = this.items.length - 1; i > -1;  i--) {
+      if(this.items[i].text == indexOrText){
+        this.remove(i);
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+ListBox.prototype.getAllCurrentTextValues = function(){
+  var arr = [];
+  for (var i = 0; i < this.items.length; i++) {
+    arr.push(this.items[i].text);
+  }
+  return arr;
+};
+
+ListItem.prototype.remove = function(){
+  this.parent.remove(this);
+};
+
+EditText.prototype.numbersOnly = function(){
+  this.addEventListener('changing', function(){
+    var rx = /^-?\d*\.*\d*$/;
+    if(!rx.test(this.text)){
+      this.text = 0;
+      this.setBg([1,0.8,0.8]);
+    } else {
+      this.setBg([1,1,1]);
+    }
+  });
+};
+
+EditText.prototype.getValue = function(){
+  return this.text;
+};
+
+EditText.prototype.setValue = function(value){
+  this.text = value;
+};
+
+StaticText.prototype.getValue = function(){
+  return this.text;
+};
+
+StaticText.prototype.setValue = function(value){
+  this.text = value;
+};
+
+Checkbox.prototype.getValue = function(){
+  return this.value;
+};
+
+Checkbox.prototype.setValue = function(value){
+  value = value == true ? true : false;
+  this.value = value;
+};
+
+var UIElements=[Window,Group,EditText,Panel];
+for(var i=0; i<UIElements.length; i++){
+  UIElements[i].prototype.setBg=function(rgb){
+    this.graphics.backgroundColor=this.graphics.newBrush(this.graphics.BrushType.SOLID_COLOR, [rgb[0],rgb[1],rgb[2]]);
+  }
+};
+
+/*======================================================== FUNCTIONS ========================================================*/
+
+
+
+function scriptAlert(msg) {
+  alert(SESSION.scriptName + " " + SESSION.scriptVersion + ":\n" + msg);
+};
+
 function quickView(msg, title, size){
   if(typeof title == 'undefined'){
     title = '';
@@ -2438,65 +2893,6 @@ function simpleShowModal(contentsFunc, propObj){
   w.show();
 };
 
-var UIElements=[Window,Group,EditText,Panel];
-for(var i = 0; i < UIElements.length; i++){
-  UIElements[i].prototype.setBg = function(rgb){
-    this.graphics.backgroundColor = this.graphics.newBrush(this.graphics.BrushType.SOLID_COLOR, [rgb[0], rgb[1], rgb[2]]);
-  }
-};
-
-EditText.prototype.getValue = function(){
-  return this.text;
-};
-
-Checkbox.prototype.getValue = function(){
-  return this.value;
-};
-
-EditText.prototype.setValue = function(value){
-  this.text = value;
-};
-
-Checkbox.prototype.setValue = function(value){
-	value = value == true ? true : false;
-  this.value = value;
-};
-
-DropDownList.prototype.selectWell = function(){
-  //CC will let you select null
-  this.addEventListener('change', function(){
-    if(this.selection == null){
-      this.selection = this.items[0];
-    }
-  });
-};
-
-DropDownList.prototype.getValue = function(){
-	if(this.selection != null){
-		if(this.hasOwnProperty("data") && typeof this.data == "object"){
-			return this.data[this.selection.text];
-		}
-		return this.selection.text;
-	} else {
-		return null;
-	}
-};
-
-DropDownList.prototype.setValue = function(value){
-	for (var i = 0; i < this.items.length; i++) {
-		if(this.items[i].text == value){
-			this.selection = this.items[i];
-			return;
-		} else if(this.hasOwnProperty("data") && typeof this.data == "object"){
-			if(value == this.data[this.items[i].text]){
-				this.selection = this.items[i];
-				return;
-			}
-		}
-	};
-	alert("The value '" + value + "' is not present in this DropDownList.");
-};
-
 function makeDropdownlist(parent, items){
   var dd = parent.add("dropdownlist", undefined, items);
   dd.selectWell();
@@ -2513,6 +2909,7 @@ function makeEditableReadonlyEdittext(parent, chars, defaultText){
 	var editableEdittext = stackGroup.add("edittext", undefined, defaultText);
 	readonlyEdittext.characters = editableEdittext.characters = chars;
 	return {
+		element : stackGroup,
 		editable : editableEdittext,
 		readonly : readonlyEdittext,
 		getValue : function(){
@@ -2812,7 +3209,7 @@ function UIWindow(){
 
 	w.onShow = function(){
 
-		populateUI(this.window.UIElements);
+		populateUI(this.window.UIElements, true);
 
 		this.layout.layout(true);
 
@@ -2925,6 +3322,7 @@ function variablesDisplayGroup(parent){
   ch_useHeaders.value = SETTINGS.useHeaders;
   ch_useHeaders.onClick = function(){
   	SETTINGS.useHeaders = this.value;
+  	updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
   	if(DATA.grid.length > 0){
 			DATA.getCurrentVars(parent.window.UIElements);
 	  	list_varNames.displayData(DATA.currentVars);
@@ -2938,6 +3336,7 @@ function variablesDisplayGroup(parent){
   ch_transpose.value = SETTINGS.transpose;
   ch_transpose.onClick = function(){
   	SETTINGS.transpose = this.value;
+  	updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
   	if(DATA.grid.length > 0){
   		DATA.getCurrentVars(parent.window.UIElements);
 	  	list_varNames.displayData(DATA.currentVars);
@@ -3066,7 +3465,7 @@ function optionsGroup(parent){
 
   var g2 = g1.add("group");
   g2.alignChildren = "fill";
-	var g_scriptWarnings = g2.add("panel", undefined, "Warnings");
+	var g_scriptWarnings = g2.add("panel", undefined, "Notifications");
 
 	var warningItems = getPropertyList(WARNINGSETTINGS), thisWarningItem, newItem;
 	var list_warnings = g_scriptWarnings.add("listbox", undefined, []);
@@ -3092,11 +3491,26 @@ function optionsGroup(parent){
 	g_settings.spacing = 4;
 	var ch_dbslNextline = g_settings.add("checkbox", undefined, "'\\\\' creates line break");
 	ch_dbslNextline.size = [204, 20];
+	ch_dbslNextline.onClick = function(){
+		updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
+	};
 
-	if(LOCALTEST){
-		var btn_visKeys = g_settings.add("button", undefined, "Edit Visibility Keywords");
-		btn_visKeys.helpTip = "Control which keywords will result in a true/false for the visibility variables."
-	}
+	var settingsAreaButtonSize = [200, 26];
+
+	var btn_visKeys = g_settings.add("button", undefined, "Edit Visibility Keywords");
+	btn_visKeys.helpTip = "Control which keywords will result in a true/false for the visibility variables.";
+	btn_visKeys.size = settingsAreaButtonSize;
+	btn_visKeys.onClick = function(){
+		var res = visibilityKeysDialog();
+		if(res != null){
+	  	updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
+		}
+	};
+
+	var btn_customIncs = g_settings.add("button", undefined, "Custom Increments");
+	btn_customIncs.helpTip = "Manage custom increments: incremented integers with start and zero-padding options.";
+	btn_customIncs.size = settingsAreaButtonSize;
+	btn_customIncs.onClick = customIncrementsDialog;
 
 	var g_datasetNames = g1.add("panel", undefined, "Dataset Names");
 	g_datasetNames.size = [UI_SIZING.panelWidth_1, 100];
@@ -3107,7 +3521,7 @@ function optionsGroup(parent){
 
 	btn_assign.onClick = function(){
 		var newDsNames = datasetAssignDialog(DATASETNAMEFIELDS_current);
-		if(newDsNames ==  null){
+		if(newDsNames == null){
 			return;
 		}
 		DATASETNAMEFIELDS_current = newDsNames;
@@ -3118,6 +3532,7 @@ function optionsGroup(parent){
 			this.window.UITestElements[tabGroupKey].children[0].populateFields();
 			// also populate the testing tab
 		}
+		updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
 	};
 
 	var g_xmlOptions = g1.add("panel", undefined, "XML Options");
@@ -3152,6 +3567,7 @@ function optionsGroup(parent){
 		if(SESSION.documentExists){
 			TestManager.clearSpecificTestDisplays(this.window.UITestElements, "artBinding");
 		}
+		updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
 	};
 	var g_autobinding_1 = g_autobinding.add("group");
 	g_autobinding_1.spacing = 2;
@@ -3176,6 +3592,7 @@ function optionsGroup(parent){
 		if(!this.value){
 			disp_xmlFile.setValue(decodeURI(SETTINGS.getDataXMLDestination()));
 		}
+		updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
 	};
 
 	btn_xmlFile.onClick = function(){
@@ -3184,18 +3601,28 @@ function optionsGroup(parent){
 			return;
 		}
 		var dfStr = this.window.UIElements["disp_dataFile"].getValue();
+		var xmlFile, destChoice;
 		if(dfStr != ""){
 			var dataFile = File(dfStr);
 			if(dataFile.exists){
-				var xmlFile = File(dataFile.parent + "/" + decodeURI(dataFile.name).replace(/\.\w{2,4}$/,"") + "-vi_data.xml");
-				var destChoice = xmlFile.saveDlg("Choose a place to save the Variable Import XML File.");
+				xmlFile = File(dataFile.parent + "/" + decodeURI(dataFile.name).replace(/\.\w{2,4}$/,"") + "-vi_data.xml");
+				destChoice = xmlFile.saveDlg("Choose a place to save the Variable Import XML File.");
 				if(destChoice != null){
 					disp_xmlFile.setValue(decodeURI(destChoice));
 				} else {
 					disp_xmlFile.setValue(decodeURI(SETTINGS.getDataXMLDestination()));
 				}
 			}
+		} else {
+			xmlFile = File(SETTINGS.getDataXMLDestination());
+			destChoice = xmlFile.saveDlg("Choose a place to save the Variable Import XML File.");
+			if(destChoice != null){
+				disp_xmlFile.setValue(decodeURI(destChoice));
+			} else {
+				disp_xmlFile.setValue(decodeURI(SETTINGS.getDataXMLDestination()));
+			}
 		}
+		updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
 	};
 
 	disp_xmlFile.getValue = function(){
@@ -3295,6 +3722,7 @@ function prependPathsGroup(parent){
 			this.helpTip = "";
 		}
 		TestManager.clearSpecificTestDisplays(this.window.UITestElements, this.key);
+		updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
 	};
 
 	disp_prependGraphPath.onChange = function(){
@@ -3308,6 +3736,7 @@ function prependPathsGroup(parent){
 			this.helpTip = "";
 		}
 		TestManager.clearSpecificTestDisplays(this.window.UITestElements, this.key);
+		updateCurrentPresetNameDisplays(this.window.UIElements, PRESETS.getByName(SESSION.currentLoadedPresetName), true);
 	};
 
 	parent.window.UITestElements["foundImages"] = disp_foundImages;
@@ -3332,20 +3761,25 @@ function getPropertySummaryString(obj){
 	  		}
 	  	}
 	  } else {
-	  	var dsNmMsg = [], propObj, dispText;
-	  	for(var it in obj[all]){
-	  		propObj = getSpecificPropertyObj(FIELDNAMEOPTIONS_current, "type", obj[all][it].type);
-	  		if(propObj == null){
-	  			// missing variable
-	  			propObj = {
-	  				type : obj[all][it].type,
-	  				displayText : "Variable " + obj[all][it].type.replace(/[^\d]/g,"") + " Value : \"" + obj[all][it].text + "\""
-	  			};
-	  		}
-	  		dispText = (propObj.displayText == "Custom Text") ? propObj.displayText + " : \"" + obj[all][it].text + "\"" : propObj.displayText;
-	  		dsNmMsg.push(it + " : " + dispText);
+	  	if( all == "datasetNameObj" ){
+		  	var dsNmMsg = [], propObj, dispText;
+		  	for(var it in obj[all]){
+		  		propObj = getSpecificPropertyObj(FIELDNAMEOPTIONS_current, "type", obj[all][it].type);
+		  		if(propObj == null){
+		  			// missing variable
+		  			propObj = {
+		  				type : obj[all][it].type,
+		  				displayText : "Variable " + obj[all][it].type.replace(/[^\d]/g,"") + " Value : \"" + obj[all][it].text + "\""
+		  			};
+		  		}
+		  		dispText = (propObj.displayText == "Custom Text" || propObj.displayText == "Custom Increment") ?
+		  			propObj.displayText + " : \"" + obj[all][it].text + "\"" : propObj.displayText;
+		  		dsNmMsg.push(it + " : " + dispText);
+		  	}
+		  	msg.push("----------------\nDataset Names:\n" + dsNmMsg.join("\n"));
+	  	} else if(all == "enabledVisibilityKeyNames") {
+  			msg.push("----------------\nEnabled Visibility Keys:\n" + obj[all].join("\n"));
 	  	}
-	  	msg.push("Dataset Names:\n" + dsNmMsg.join("\n"));
 	  }
   };
   return msg;
@@ -3354,9 +3788,7 @@ function getPropertySummaryString(obj){
 function presetDialog(presetObjOrig, purpose, currentStateObj){
 
 	var presetObj = clone(presetObjOrig);
-	// if(presetObj.hasOwnProperty("datasetNameObj")){
-	// 	presetObj.datasetNameObj = clearOutOfBoundVariables(presetObj.datasetNameObj);
-	// }
+
 	var purpose = clone(purpose);
 	var w = new Window("dialog", "Preset Display");
 	var g1 = w.add("group");
@@ -3372,6 +3804,15 @@ function presetDialog(presetObjOrig, purpose, currentStateObj){
   	nameText,
   	{readonly : (!purpose.presetDispEditable || nameText == "default")}
 	);
+	if(purpose.presetDispEditable){
+		disp_currentPreset.onChanging = function(){
+			if(this.getValue().indexOf("*") > -1){
+				scriptAlert("Sorry, due to asterisk (*) characters being used to mark preset dialog overrides they cannot be used in a preset name." +
+					" Asterkisk automatically removed.");
+				this.setValue(this.getValue().replace(/\*/g, ""));
+			}
+		};
+	}
   disp_currentPreset.characters = 36;
   var oldName = disp_currentPreset.text;
 
@@ -3400,8 +3841,13 @@ function presetDialog(presetObjOrig, purpose, currentStateObj){
   	var lbl_summary2 = g1.add('statictext', undefined, "Dataset Names");
 	  var summary2 = g1.add("edittext", undefined, "", {readonly : true, multiline : true});
 	  summary2.size = [650, 100];
-	  summary2.text = msg.join("\n").replace(/[.\r\n\s\S]+Dataset Names\:/g, "").trim();
-  	summary.text = msg.join("\n").replace(/Dataset Names\:[.\r\n\s\S]+$/g, "").trim();
+	  summary2.text = msg.join("\n").replace(/[.\r\n\s\S]+----------------\nDataset Names\:/g, "").replace(/----------------\nEnabled Visibility Keys\:[.\r\n\s\S]+$/,"").trim();
+  	summary.text = msg.join("\n").replace(/----------------\nDataset Names\:[.\r\n\s\S]+$/g, "").trim();
+
+  	var lbl_summary3 = g1.add('statictext', undefined, "Enabled Visibility Keys");
+  	var summary3 = g1.add("edittext", undefined, "", {readonly : true, multiline : true});
+	  summary3.size = [650, 100];
+	  summary3.text = msg.join("\n").replace(/[.\r\n\s\S]+----------------\nEnabled Visibility Keys\:/,"").trim();
   }
 
   var g_btn = w.add("group");
@@ -3420,6 +3866,16 @@ function presetDialog(presetObjOrig, purpose, currentStateObj){
 
   var btn_ok = g_btn.add("button", undefined, purpose.actionButtonName);
   w.defaultElement = btn_ok;
+  if(purpose.presetDispEditable){
+  	btn_ok.onClick = function(){
+  		var presetNewName = disp_currentPreset.getValue();
+  		if(presetNewName == ""){
+  			scriptAlert("A preset name may not be blank.");
+  			return;
+  		}
+  		w.close();
+  	}
+  }
 
   var btn_ccl = g_btn.add("button", undefined, "Cancel");
 
@@ -3489,11 +3945,13 @@ function presetOptionsGroup(parent){
 	var btn_activate = g_btn.add("button", undefined, "Activate");
 
 	var g_btm = g1.add("group");
-	var btn_save = g_btm.add("button", undefined, "Save Presets");
+	g_btm.margins = [2, 6, 2, 0];
+	var btn_save = g_btm.add("button", undefined, "Save Settings & Presets");
 	btn_save.size = [210, 30];
 	btn_save.onClick = function(){
 		updateScriptDataFromUI(this.window.UIElements);
 		writeSettingsFile(getScriptDataObj());
+		this.window.UIElements["variablesDisplayR"].notify("onClick");
 	};
 
 	btn_activate.onClick = function(){
@@ -3725,6 +4183,8 @@ function datasetNameFieldComponent(parent, fieldName, datasetObj){
 		}
 	};
 
+	var customIncNames = getSpecificPropertyListArr(CUSTOM_INCREMENTS_current, "name");
+
 	var g1 = parent.add("panel", undefined, fieldName[0].toUpperCase() + fieldName.substr(1).replace("_", " "));
 	g1.spacing = 4;
 	g1.margins = [2, 8, 2, 2];
@@ -3732,18 +4192,39 @@ function datasetNameFieldComponent(parent, fieldName, datasetObj){
 	var thisType = datasetObj[fieldName].type;
 	dd_options.setValue(FIELDNAMEOPTIONS_current[thisType].displayText);
 
-	var disp = makeEditableReadonlyEdittext(g1, 20, datasetObj[fieldName].text);
+	var g1_2 = g1.add("group");
+	g1_2.orientation = "stacked";
+	var disp = makeEditableReadonlyEdittext(g1_2, 20, datasetObj[fieldName].text);
+	var dd_customInc = makeDropdownlist(g1_2, customIncNames);
+	dd_customInc.size = dd_options.size = [165, 26];
+	if(dd_options.getValue() == "Custom Increment"){
+    dd_customInc.setValue(datasetObj[fieldName].text);
+		disp.element.visible = false;
+	} else {
+		dd_customInc.visible = false;
+	}
 
 	toggle(dd_options.selection.text);
 
 	dd_options.onChange = function(){
 		var sel = this.selection;
-		disp.setValue(getSpecificPropertyObj(FIELDNAMEOPTIONS_current, "displayText", this.selection.text).defaultText);
-		toggle(this.selection.text);
+		if(sel.text != "Custom Increment"){
+			dd_customInc.visible = false;
+			disp.element.visible = true;
+			disp.setValue(getSpecificPropertyObj(FIELDNAMEOPTIONS_current, "displayText", sel.text).defaultText);
+			toggle(sel.text);
+		} else {
+			disp.setValue(dd_customInc.selection.text);
+			disp.element.visible = false;
+			dd_customInc.visible = true;
+		}
+	};
+	dd_customInc.onChange = function(){
+		disp.setValue(this.selection.text);
 	};
 	return {
 		typeElem : dd_options,
-		textElem : disp
+		textElem : disp /* re-use the disp text to hold the custom inc name */
 	};
 };
 
@@ -3768,7 +4249,11 @@ function datasetAssignDialog(datasetObjOrig){
 		return resObj;
 	};
 
-	var datasetObj = clearOutOfBoundVariables(clone(datasetObjOrig));
+	var processedDatasetNameFieldsResult = clearOutOfBoundVariables(clone(datasetObjOrig));
+	var datasetObj = processedDatasetNameFieldsResult.obj;
+	if(WARNINGSETTINGS.showDatasetNamingWarning && processedDatasetNameFieldsResult.msg != ""){
+		quickView(processedDatasetNameFieldsResult.msg, "Dataset naming field errors.");
+	}
 
 	var w = new Window("dialog", "Assign Dataset Names");
 	w.spacing = 4;
@@ -3806,6 +4291,20 @@ function datasetAssignDialog(datasetObjOrig){
 	}
 	var btn_ok = g_btn.add("button", undefined, "Ok");
 	var btn_ccl = g_btn.add("button", undefined, "Cancel");
+
+	btn_ok.onClick = function(){
+		var isValid = false, type;
+		for(var all in tempObj){
+			type = getSpecificPropertyObj(FIELDNAMEOPTIONS_current, "displayText", tempObj[all].typeElem.getValue()).type;
+			if(type != "nothing"){
+				isValid = true;
+				w.close();
+			}
+		}
+		if(!isValid){
+			scriptAlert("Dataset fields cannot all be set to 'nothing'.");
+		}
+	};
 
 	w.onShow = function(){
 
@@ -3874,8 +4373,517 @@ function finishedXMLImportDialog(varsNum, recordsNum, missingImgNum, missingGrfN
 	w.show();
 };
 
+//---------------------------------------------------------------------------------------- CUSTOM INCREMENTS ------------------------------------------------------------------//
+function updateCustomIncrementDisplay(display, customIncObj){
+	var arr = [], prefixStr;
+	for (var i = 0; i < 10; i++) {
+		prefixStr = "  " + (i + 1) + ": "; // adds a number to tell the index in the display area text
+		if((i + 1).toString().length > 1){
+			prefixStr = (i + 1) + ": ";
+		}
+		arr.push(prefixStr + getRecordCustomInc(i, customIncObj.startNum, customIncObj.padZero, customIncObj.increment, customIncObj.isIntervalIncrement));
+	}
+	display.setValue(arr.join("\n"));
+};
 
+function customIncrementsDialog(){
 
+	var dialogData = clone(CUSTOM_INCREMENTS_current);
+	var customIncNames = [];
+	for (var i = 0; i < dialogData.length; i++) {
+		customIncNames.push(dialogData[i].name);
+	}
+
+	var w = new Window("dialog", "Custom Increment Options");
+	w.spacing = 4;
+
+	var g0 = w.add("group");
+	g0.orientation = "row";
+
+	var g1 = g0.add("group");
+	var g1_1 = g1.add("group");
+	g1_1.orientation = "column";
+	var lbl_customIncList = g1_1.add("statictext", undefined, "Custom Increment List");
+	var list_customIncs = g1_1.add("listbox", undefined, customIncNames);
+	list_customIncs.size = [195, 280];
+	var g1_1_2 = g1_1.add("group");
+  g1_1_2.orientation = "row";
+  g1_1_2.margins = [4, 4, 4, 10];
+  var btn_addCustomInc = g1_1_2.add("button", undefined, "Add \u2795");
+  var btn_removeCustomInc = g1_1_2.add("button", undefined, "Remove \u2796");
+  btn_addCustomInc.size = btn_removeCustomInc.size = [80, 25];
+
+  var g2a = g0.add("group");
+  g2a.orientation = "column";
+	var g2 = g2a.add("panel", undefined, "Properties");
+	g2.spacing = 4;
+	g2.alignChildren = "left";
+	var g2_1 = g2.add("group");
+	var lbl_startNum = g2_1.add("statictext", undefined, "Start Number");
+	lbl_startNum.size = [120, 26];
+	var disp_startNum = g2_1.add("edittext", undefined, "");
+	disp_startNum.characters = 10;
+	disp_startNum.onChange = function(){
+		var val = this.getValue();
+		var msg = "Please enter a zero, or a positive integer number into the 'Start Number' field.";
+		if(isNaN(val) || !/^\d+$/.test(val)){
+			scriptAlert(msg);
+			this.setValue(0);
+			updateCustomIncrementDisplay(disp_preview, {
+				padZero : dd_padZero.getValue(),
+				startNum : this.getValue(),
+				increment : disp_incValue.getValue(),
+				isIntervalIncrement : ch_intervalIncrement.getValue()
+			});
+			return;
+		} else {
+			if(val != "0" && val.indexOf("0") > -1){
+				val = val.replace(/^0+/, "");
+				if(val == ""){
+					val = 0; // put it back to zero if the entered string was all zeroes
+				}
+			}
+			this.setValue(val);
+			updateCustomIncrementDisplay(disp_preview, {
+				padZero : dd_padZero.getValue(),
+				startNum : this.getValue(),
+				increment : disp_incValue.getValue(),
+				isIntervalIncrement : ch_intervalIncrement.getValue()
+			});
+		}
+	};
+
+	var g2_1a = g2.add("group");
+	var lbl_incValue = g2_1a.add("statictext", undefined, "Increment Value");
+	lbl_incValue.size = [120, 26];
+	var disp_incValue = g2_1a.add("edittext", undefined, "");
+	disp_incValue.characters = 10;
+	disp_incValue.onChange = function(){
+		var val = this.getValue();
+		var msg = "Please enter a positive integer number into the 'Increment Value' field.";
+		if(isNaN(val) || !/^\d+$/.test(val) || (val * 1) <= 0){
+			scriptAlert(msg);
+			this.setValue(1);
+			updateCustomIncrementDisplay(disp_preview, {
+				padZero : dd_padZero.getValue(),
+				startNum : this.getValue(),
+				increment : disp_incValue.getValue(),
+				isIntervalIncrement : ch_intervalIncrement.getValue()
+			});
+			return;
+		} else {
+			this.setValue(val);
+			updateCustomIncrementDisplay(disp_preview, {
+				padZero : dd_padZero.getValue(),
+				startNum : disp_startNum.getValue(),
+				increment : this.getValue(),
+				isIntervalIncrement : ch_intervalIncrement.getValue()
+			});
+		}
+	};
+
+	var g2_1b = g2.add("group");
+	var ch_intervalIncrement = g2_1b.add("checkbox", undefined, "Make Interval Increment");
+	ch_intervalIncrement.helpTip = "Adds a dash with the next value of the incremented position after the specified increment amount has been added. ex: 1-10, 11-20";
+	ch_intervalIncrement.onChange = function(){
+		var val = this.getValue();
+		updateCustomIncrementDisplay(disp_preview, {
+			padZero : dd_padZero.getValue(), 
+			startNum : disp_startNum.getValue(), 
+			increment : disp_incValue.getValue(), 
+			isIntervalIncrement : val
+		});
+	};
+
+	var g2_2 = g2.add("group");
+	var lbl_padZero = g2_2.add("statictext", undefined, "Padding Zeroes");
+	lbl_padZero.size = [120, 26];
+	var dd_padZero = makeDropdownlist(g2_2, [0,1,2,3,4,5,6,7,8,9,10,11,12,13]);
+	dd_padZero.characters = 10;
+	dd_padZero.onChange = function(){
+		updateCustomIncrementDisplay(disp_preview, { 
+			padZero : this.getValue(),
+			startNum : disp_startNum.getValue(),
+			increment : disp_incValue.getValue(),
+			isIntervalIncrement : ch_intervalIncrement.getValue()
+		});
+	};
+	var g2_3 = g2a.add("panel", undefined, "Preview Display");
+	g2_3.margins = [6, 6, 6, 6];
+	var disp_preview = g2_3.add("edittext", undefined, "", { multiline : true, readonly : true });
+	disp_preview.size = [240, 160];
+
+	var g_btn = w.add("group");
+	var btn_ccl = g_btn.add("button", undefined, "Cancel");
+	var btn_ok = g_btn.add("button", undefined, "Save");
+
+	list_customIncs.onChange = function(){
+		if(this.selection != null){
+			dd_padZero.setValue(dialogData[this.selection.index].padZero);
+			disp_startNum.setValue(dialogData[this.selection.index].startNum);
+			disp_incValue.setValue(dialogData[this.selection.index].increment);
+		  ch_intervalIncrement.setValue(dialogData[this.selection.index].isIntervalIncrement);
+			updateCustomIncrementDisplay(disp_preview, {
+				padZero : dd_padZero.getValue(),
+				startNum : disp_startNum.getValue(),
+				increment : disp_incValue.getValue(),
+				isIntervalIncrement : ch_intervalIncrement.getValue()
+			});
+		}
+	};
+
+	g2.addEventListener("mousedown", function(){
+		list_customIncs.selection = null;
+	});
+
+	ch_intervalIncrement.onClick = function(){
+		updateCustomIncrementDisplay(disp_preview, {
+			padZero : dd_padZero.getValue(),
+			startNum : disp_startNum.getValue(),
+			increment : disp_incValue.getValue(),
+			isIntervalIncrement : this.getValue()
+		});
+	};
+
+	btn_addCustomInc.onClick = function(){
+		var startNumValue = disp_startNum.getValue();
+		var padZeroValue = dd_padZero.getValue();
+		var incrementValue = disp_incValue.getValue();
+		var isIntervalIncrement = ch_intervalIncrement.getValue();
+		if(startNumValue == "" || padZeroValue == "" || incrementValue == ""){
+			scriptAlert("Please ensure the 'Increment Value' and 'Start Number' fields are filled.");
+			return;
+		}
+		var newName = "s" + startNumValue + "p" + padZeroValue + "i" + incrementValue + (isIntervalIncrement ? "-interval" : "");
+		dialogData.push({
+			name : newName,
+			padZero : padZeroValue,
+			startNum : startNumValue,
+			increment : incrementValue,
+			isIntervalIncrement : isIntervalIncrement
+		});
+		list_customIncs.addItem(newName);
+	};
+
+	btn_removeCustomInc.onClick = function(){
+		if(list_customIncs.selection == null){
+			return;
+		}
+		dialogData.splice(list_customIncs.selection.index, 1);
+		list_customIncs.removeSelectedItem();
+	};
+
+	btn_ok.onClick = function(){
+		if(dialogData.length < 1){
+			scriptAlert("At least one custom increment must be present in the list to save.");
+			return;
+		} else {
+			// only save the custom increment portion of the settings file
+			SESSION.settingsFile.open('r');
+			var settingsObj = JSON.parse(SESSION.settingsFile.read());
+			SESSION.settingsFile.close();
+			CUSTOM_INCREMENTS_current = settingsObj.CUSTOM_INCREMENTS = dialogData;
+			writeSettingsFile(settingsObj);
+		}
+		this.window.close();
+	};
+
+	if(w.show() == 2){
+		return null;
+	} else {
+		return {
+
+		};
+	}
+};
+
+//---------------------------------------------------------------------------------------- VISIBILITY KEYS ------------------------------------------------------------------//
+function populateVisKeyList(listElem, visKeys){
+  for (var i = listElem.items.length - 1; i > -1;  i--) {
+    listElem.remove(i);
+  }
+  var thisVisKey, newItem;
+  for (var i = 0; i < visKeys.length; i++) {
+  	thisVisKey = visKeys[i];
+  	newItem = listElem.add("item");
+  	newItem.text = thisVisKey.name;
+  	newItem.subItems[0].text = thisVisKey.displayText;
+  	newItem.checked = thisVisKey.enabled;
+  }
+};
+
+function visibilityKeysDialog(){
+
+	var textInputHelpTip = "Visibility Key 'text' is compared to data cell text in lower-case.";
+
+	function getBothSetsOfKeys(visKeyObj){
+		var trueVisKeys = [], falseVisKeys = [];
+		var thisVisKey;
+		for (var i = 0; i < visKeyObj.length; i++) {
+			thisVisKey = visKeyObj[i];
+			if(thisVisKey.value){
+				trueVisKeys.push(thisVisKey);
+			} else {
+				falseVisKeys.push(thisVisKey);
+			}
+		}
+		return { trueVisKeys : trueVisKeys, falseVisKeys : falseVisKeys };
+	};
+
+	var dialogData = clone(VisibilityKeys);
+	var keyData = getBothSetsOfKeys(dialogData);
+	var trueVisKeys = keyData.trueVisKeys, falseVisKeys = keyData.falseVisKeys;
+
+	var w = new Window("dialog", "Manage Visibility Keys");
+	w.spacing = 4;
+	var inputCharacterAmt = 10;
+
+	var g0 = w.add("group");
+	g0.orientation = "row";
+
+	var g1 = g0.add("group");
+	var g1_1 = g1.add("group");
+	g1_1.orientation = "column";
+
+	var lbl_trueList = g1_1.add("statictext", undefined, "true / visible");
+	var list_trueList = g1_1.add("listbox", undefined, [], {
+		numberOfColumns: 2,
+		showHeaders: true,
+		columnTitles: ["Name", "Text"],
+		columnWidths: [120, 120]
+	});
+	list_trueList.size = [260, 200];
+	list_trueList.name = "True List"; // custom property
+
+	var g1_1_2a = g1_1.add("group");
+  g1_1_2a.orientation = "row";
+  g1_1_2a.spacing = 4;
+  var g1_1_2a_1 = g1_1_2a.add("group");
+  g1_1_2a_1.orientation = "column";
+  g1_1_2a_1.spacing = 4;
+  var lbl_trueKeyName = g1_1_2a_1.add("statictext", undefined, "name");
+  var disp_trueKeyName = g1_1_2a_1.add("edittext", undefined, "");
+  disp_trueKeyName.characters = inputCharacterAmt;
+  disp_trueKeyName.list = list_trueList;
+
+  var g1_1_2a_2 = g1_1_2a.add("group");
+  g1_1_2a_2.orientation = "column";
+  g1_1_2a_2.spacing = 4;
+  var lbl_trueKeyText = g1_1_2a_2.add("statictext", undefined, "text");
+  var disp_trueKeyText = g1_1_2a_2.add("edittext", undefined, "");
+  disp_trueKeyText.helpTip = textInputHelpTip;
+  disp_trueKeyText.characters = inputCharacterAmt;
+  disp_trueKeyText.list = list_trueList;
+
+	var g1_1_2 = g1_1.add("group");
+  g1_1_2.orientation = "row";
+  g1_1_2.margins = [4, 4, 4, 10];
+  var btn_addTrueVisKey = g1_1_2.add("button", undefined, "Add \u2795");
+  var btn_removeTrueVisKey = g1_1_2.add("button", undefined, "Remove \u2796");
+  btn_addTrueVisKey.size = btn_removeTrueVisKey.size = [80, 25];
+  btn_addTrueVisKey.list = btn_removeTrueVisKey.list = list_trueList;
+
+  var sep = g1.add("panel");
+  sep.size = [2, 300];
+	var g1_2 = g1.add("group");
+	g1_2.orientation = "column";
+
+	var lbl_falseList = g1_2.add("statictext", undefined, "false / invisible");
+	var list_falseList = g1_2.add("listbox", undefined, [], {
+		numberOfColumns: 2,
+		showHeaders: true,
+		columnTitles: ["Name", "Text"],
+		columnWidths: [120, 120]
+	});
+	list_falseList.size = [260, 200];
+	list_falseList.name = "False List"; // custom property
+
+	var g1_2_2a = g1_2.add("group");
+  g1_2_2a.orientation = "row";
+  g1_2_2a.spacing = 4;
+  var g1_2_2a_1 = g1_2_2a.add("group");
+  g1_2_2a_1.orientation = "column";
+  g1_2_2a_1.spacing = 4;
+  var lbl_falseKeyName = g1_2_2a_1.add("statictext", undefined, "name");
+  var disp_falseKeyName = g1_2_2a_1.add("edittext", undefined, "");
+  disp_falseKeyName.characters = inputCharacterAmt;
+  disp_falseKeyName.list = list_falseList;
+
+  var g1_2_2a_2 = g1_2_2a.add("group");
+  g1_2_2a_2.orientation = "column";
+  g1_2_2a_2.spacing = 4;
+  var lbl_falseKeyText = g1_2_2a_2.add("statictext", undefined, "text");
+  var disp_falseKeyText = g1_2_2a_2.add("edittext", undefined, "");
+  disp_falseKeyText.helpTip = textInputHelpTip;
+  disp_falseKeyText.characters = inputCharacterAmt;
+  disp_falseKeyText.list = list_falseList;
+
+	var g1_2_2 = g1_2.add("group");
+  g1_2_2.orientation = "row";
+  g1_2_2.margins = [4, 4, 4, 10];
+  var btn_addFalseVisKey = g1_2_2.add("button", undefined, "Add \u2795");
+  var btn_removeFalseVisKey = g1_2_2.add("button", undefined, "Remove \u2796");
+  btn_addFalseVisKey.size = btn_removeFalseVisKey.size = [80, 25];
+  btn_addFalseVisKey.list = btn_removeFalseVisKey.list = list_falseList;
+
+  var btns = [btn_addTrueVisKey, btn_removeTrueVisKey, btn_addFalseVisKey, btn_removeFalseVisKey];
+  var thisBtn;
+  for (var i = 0; i < btns.length; i++) {
+  	thisBtn = btns[i];
+  	thisBtn.onClick = function(){
+  		var self = this;
+  		return function (self){
+  			var list = self.list;
+  			var isTrueList = list.name == "True List";
+  			var isAddBtn = self.text == "Add \u2795";
+  			// check the list data against memory object to give the OK button a save-&-apply or only-apply functionality.
+  			// add/remove item
+  			if(isAddBtn){
+  				var isValidAddition, thisValueInputElem, thisNameInputElem, problem;
+  				if(isTrueList){
+  					thisValueInputElem = disp_trueKeyText;
+  					thisNameInputElem = disp_trueKeyName;
+  				} else {
+  					thisValueInputElem = disp_falseKeyText;
+  					thisNameInputElem = disp_falseKeyName;
+  				}
+  				try {					
+	  				problem = "VisibilityKeys - please fill out all necessary fields before adding a new key.";
+	  				isValidAddition = (thisNameInputElem.getValue().trim() != "");
+	  				if(!isValidAddition){
+	  					throw(problem);
+	  				}
+	  				var allPresentListNames = [];
+						for (var i = 0; i < list.items.length; i++) {
+							thisName = list.items[i].text;
+							allPresentListNames.push(thisName);
+						}
+						problem = "VisibilityKeys - please choose a different name for the new key to add to the list.";
+						isValidAddition = (allPresentListNames.indexOf(thisNameInputElem.getValue()) == -1);
+	  				if(isValidAddition){					
+			  			var newItem = list.add("item");
+			  			newItem.text = thisNameInputElem.getValue(); // name
+			  			newItem.subItems[0].text = thisValueInputElem.getValue().toLowerCase(); // text
+			  			newItem.checked = true;
+	  				} else {
+	  					throw(problem);
+	  				}
+  				} catch(e) {
+  					scriptAlert(e);
+  					return;
+  				}
+  			} else {
+  				if(list.selection == null){
+  					return;
+  				}
+  				if(list.items.length > 1){
+  					list.selection.remove();
+  				}
+  			}
+
+				var keyData = getBothSetsOfKeys(VisibilityKeys);
+				var trueVisKeys = keyData.trueVisKeys, falseVisKeys = keyData.falseVisKeys;
+				var targetKeys = (isTrueList) ? trueVisKeys : falseVisKeys;
+				var isCompleteMatch = true;
+				var thisName, thisText;
+				for (var i = 0; i < list.items.length; i++) {
+					thisName = list.items[i].text;
+					thisText = list.items[i].subItems[0].text;
+					if(getByName(targetKeys, thisName) == null){
+						isCompleteMatch = false;
+						break;
+					}
+				}
+				var thisCompareName, wasMatched;
+				for (var i = 0; i < targetKeys.length; i++) {
+					thisCompareName = targetKeys[i].name;
+					wasMatched = false;
+					for (var j = 0; j < list.items.length; j++) {
+						thisName = list.items[j].text;
+						thisText = list.items[j].subItems[0].text;
+						if(thisName == thisCompareName){
+							wasMatched = true;
+							break;
+						} else if(!wasMatched && j == list.items.length - 1){
+							isCompleteMatch = false;
+							break;
+						}
+					}
+				}
+				if(isCompleteMatch){
+					btn_ok.text = "Apply";
+				} else {
+					btn_ok.text = "Save & Apply";
+				}
+  		}(self);
+  	};
+  }
+
+  list_trueList.onDoubleClick = list_falseList.onDoubleClick = function(){
+  	if(this.selection != null){
+  		this.selection.checked = !this.selection.checked;
+  	}
+  };
+  var firstFocus = true;
+  w.addEventListener("mouseover", function(){
+  	if(firstFocus){
+  		list_falseList.active = true;
+  		list_trueList.active = true;
+  		firstFocus = false;
+  	}
+  });
+
+	var g_btn = w.add("group");
+	var btn_ccl = g_btn.add("button", undefined, "Cancel");
+	var btn_ok = g_btn.add("button", undefined, "Apply");
+	btn_ccl.size = btn_ok.size = [180, 26];
+
+	btn_ok.onClick = function(){
+		var resultData = [], thisItem, keyObj;
+		for (var i = 0; i < list_trueList.items.length; i++) {
+			thisItem = list_trueList.items[i];
+			keyObj = {
+				displayText : thisItem.subItems[0].text,
+				name : thisItem.text,
+				value : true,
+				enabled : thisItem.checked
+			};
+			resultData.push(keyObj);
+		}
+		for (var i = 0; i < list_falseList.items.length; i++) {
+			thisItem = list_falseList.items[i];
+			keyObj = {
+				displayText : thisItem.subItems[0].text,
+				name : thisItem.text,
+				value : false,
+				enabled : thisItem.checked
+			};
+			resultData.push(keyObj);
+		}
+		VisibilityKeys = resultData;
+		if(this.text == "Save & Apply"){
+			SESSION.settingsFile.open('r');
+			var settingsObj = JSON.parse(SESSION.settingsFile.read());
+			SESSION.settingsFile.close();
+			settingsObj.VisibilityKeys = VisibilityKeys;
+			writeSettingsFile(settingsObj);
+		}
+		this.window.close();
+	};
+
+	w.onShow = function(){
+		populateVisKeyList(list_trueList, trueVisKeys);
+		populateVisKeyList(list_falseList, falseVisKeys);
+	};
+
+	if(w.show() == 2){
+		return null;
+	} else {
+		return {
+
+		};
+	}
+};
 
 //==================================================================================//
 
