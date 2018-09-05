@@ -1,5 +1,6 @@
 function DealWithOversetText_SingleLine() {
   var defaultSizeTagName = "overset_text_default_size";
+  var defaultIncrement = 0.1;
 
   function recordFontSizeInTag(size, art){
     var tag;
@@ -61,13 +62,13 @@ function DealWithOversetText_SingleLine() {
     if (textBox.lines.length > 0) {
       var firstLineCharCount = textBox.lines[0].characters.length;
       if (isOverset(textBox, lineCount)) {
-        var inc = 0.01;
+        var inc = defaultIncrement;
         while (isOverset(textBox, lineCount)) {
           textBox.textRange.characterAttributes.size -= inc;
         }
       }
     } else if (textBox.characters.length > 0) {
-      var inc = 0.01;
+      var inc = defaultIncrement;
       while (isOverset(textBox, lineCount)) {
         textBox.textRange.characterAttributes.size -= inc;
       }
