@@ -60,15 +60,15 @@ function DealWithOversetText_SingleLine() {
     var lineCount = textBox.lines.length;
     if (textBox.lines.length > 0) {
       var firstLineCharCount = textBox.lines[0].characters.length;
-      if (isOverset(textBox)) {
+      if (isOverset(textBox, lineCount)) {
         var inc = 0.01;
-        while (isOverset(textBox)) {
+        while (isOverset(textBox, lineCount)) {
           textBox.textRange.characterAttributes.size -= inc;
         }
       }
     } else if (textBox.characters.length > 0) {
       var inc = 0.01;
-      while (isOverset(textBox)) {
+      while (isOverset(textBox, lineCount)) {
         textBox.textRange.characterAttributes.size -= inc;
       }
     }
