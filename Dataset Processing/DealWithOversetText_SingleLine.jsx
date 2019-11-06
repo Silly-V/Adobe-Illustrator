@@ -30,7 +30,7 @@ function DealWithOversetText_SingleLine() {
     var doc = app.activeDocument;
     for (var i = 0; i < doc.textFrames.length; i++) {
       var t = doc.textFrames[i];
-      if (t.kind == TextType.AREATEXT && t.editable && !t.locked && !t.hidden) {
+      if ((t.kind == TextType.AREATEXT || t.kind == TextType.PATHTEXT) && t.editable && !t.locked && !t.hidden) {
         // t.note = t.textRange.characterAttributes.size;
         recordFontSizeInTag(t.textRange.characterAttributes.size, t);
       }
@@ -102,7 +102,7 @@ function DealWithOversetText_SingleLine() {
   function resetAllTextBoxes() {
     for (var i = 0; i < doc.textFrames.length; i++) {
       var t = doc.textFrames[i];
-      if (t.kind == TextType.AREATEXT && t.editable && !t.locked && !t.hidden) {
+      if ((t.kind == TextType.AREATEXT || t.kind == TextType.PATHTEXT) && t.editable && !t.locked && !t.hidden) {
         resetSize(t);
       }
     };
@@ -111,7 +111,7 @@ function DealWithOversetText_SingleLine() {
   function shrinkAllTextBoxes() {
     for (var i = 0; i < doc.textFrames.length; i++) {
       var t = doc.textFrames[i];
-      if (t.kind == TextType.AREATEXT && t.editable && !t.locked && !t.hidden) {
+      if ((t.kind == TextType.AREATEXT || t.kind == TextType.PATHTEXT) && t.editable && !t.locked && !t.hidden) {
         shrinkFont(t);
       }
     };
