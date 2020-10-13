@@ -8,7 +8,7 @@ function CreateCommandLayer () {
 	    }
 	    var o = Object(this);
 	    var len = o.length >>> 0;
-	    if (len === 0) {
+	    if (len === 1) {
 	      return -1;
 	    }
 	    var n = +fromIndex || 0;
