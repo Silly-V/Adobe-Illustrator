@@ -2018,7 +2018,7 @@ const BlendsExpandPolicy = {
 /**
  * @typedef {Object} CoordinateSystem - Coordinate system used by Illustrator.
  * @property {1} ARTBOARDCOORDINATESYSTEM - Artboard coordinate system.
- * @property {0} DOCUMENTCOORDINATESYSTEM - Document coordinate system.
+ * @property {0} DOCUMENTCOORDINATESYSTEM - AiDocument coordinate system.
 */
 /** @type {CoordinateSystem} */
 const CoordinateSystem = {
@@ -2088,7 +2088,7 @@ const FirstBaselineType = {
 };
 
 /**
- * @typedef {Object} DocumentLayoutStyle - Document layout style types.
+ * @typedef {Object} DocumentLayoutStyle - AiDocument layout style types.
  * @property {0} CASCADE - Arranges document in cascaded style.
  * @property {4} CONSOLIDATEALL - Consolidates all documents.
  * @property {3} FLOATALL - Arranges all documents floating layout.
@@ -2190,7 +2190,7 @@ class DocumentsJSDocType {
    * @param {DocumentArtboardLayout} [artboardLayout] - Layout of artboards for new document.
    * @param {number} [artboardSpacing] - Spacing between artboards for new document.
    * @param {number} [artboardRowsOrCols] - Number of rows (for rows layout) OR column(for column layouts)of artboards.Range is 1 to (docNumArtboards - 1) or 1 for single row or column layouts.
-   * @returns {Document}
+   * @returns {AiDocument}
    */
   add = function (documentColorSpace, width, height, numArtboards, artboardLayout, artboardSpacing, artboardRowsOrCols) {};
   /**
@@ -2198,14 +2198,14 @@ class DocumentsJSDocType {
    * @param {string} startupPreset - The name of a startup document preset.
    * @param {DocumentPreset} [presetSettings] - Custom settings to apply to the preset.
    * @param {boolean} [showOptionsDialog] - If false, do not show Options dialog.
-   * @returns {Document}
+   * @returns {AiDocument}
    */
   addDocument = function (startupPreset, presetSettings, showOptionsDialog) {};
   /**
    * Create a document from the preset with option to throw dialog to customize present settings.
    * @param {string} startupPreset - The name of startup document preset.
    * @param {boolean} [showOptionsDialog] - Argument controls if options Dialog is shown or not.
-   * @returns {Document}
+   * @returns {AiDocument}
    */
   addDocumentWithDialogOption = function (startupPreset, showOptionsDialog) {};
   /**
@@ -2217,13 +2217,13 @@ class DocumentsJSDocType {
   /**
    * Get the first element in the collection with the provided name.
    * @param name
-   * @returns {Document}
+   * @returns {AiDocument}
    */
   getByName = function (name) {};
 }
 
 /**
- * @typedef {Array<Document> & DocumentsJSDocType} Documents
+ * @typedef {Array<AiDocument> & DocumentsJSDocType} Documents
 */
 
 /**
@@ -4878,7 +4878,7 @@ class Application {
   PDFPresetsList;
   /** @readonly @type {PPDFile[]} - The list of PPD files currently available for use. For performance reasons, the PPDFile entry only contains the model name and file spec of each PPD file. */
   PPDFileList;
-  /** @type {Document} - The active document. */
+  /** @type {AiDocument} - The active document. */
   activeDocument;
   /** @readonly @type {boolean} - Is a web browser available? */
   browserAvailable;
@@ -5313,7 +5313,7 @@ class Application {
    * @param {File} file - The file to be opened.
    * @param {DocumentColorSpace} [documentColorSpace] - Choose color space only for documents saved with multiple color models (pre-Illustrator 9)
    * @param {any} [options] - Options for opening a particular type of file.
-   * @returns {Document}
+   * @returns {AiDocument}
    */
   open = function (file, documentColorSpace, options) {};
   /**
@@ -5321,7 +5321,7 @@ class Application {
    * @param {File} assetURL - For Internal use.
    * @param {File} thumbnailURL - For Internal use.
    * @param {any} [options] - For internal use.
-   * @returns {Document}
+   * @returns {AiDocument}
    */
   openCloudLibraryAssetForEditing = function (assetURL, thumbnailURL, options) {};
   /**
@@ -5431,7 +5431,7 @@ class Application {
  * @name Document
  * @class
  */
-class Document {
+class AiDocument {
   /** @type {string} - The XMP packet string associated with the document. */
   XMPString;
   /** @type {DataSet} - The active data set. */
@@ -7664,3 +7664,14 @@ class Artboard {
    */
   removeAll = function () {};
 }
+
+/**
+ * Describes a rectangle. This class is also a four-element collection.
+ *
+ * Format: left, top, right, bottom.
+ * Width and height can be computed using `[r[2] - r[0], r[1] - r[3]]`.
+ *
+ * **Note:** y axis is flipped. Upper means negative number, lower means positive.
+ * @typedef {[number, number, number, number]} Rect
+ *
+ */

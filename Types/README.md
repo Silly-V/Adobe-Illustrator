@@ -35,7 +35,10 @@ class InheritingClassJSDocType {
 ```
 Now when a variable is annotated with `@type {InheritingClass}`, its auto-completion should recognize `baseProperty`.
 
-## Method
+## `Document` Class
+Because VSCode automatically goes to the HTML 'document', the `Document` class is renamed to `AiDocument` to differentiate them.
+
+## Creation Method
 How is this made? A node-executable javascript file with parsing functions converts a `Types for Adobe` file to a JSDoc file by manipulating strings. It relies on common structural convention in a `Types for Adobe` **.d.ts** file, such as very consistent comments, separation of blocks by a blank line, and TS label annotation in each and every place - even `:void` as a return label for methods.
 
 Class declarations are turned into real mock javascript classes, and function declarations are turned into real properties to facilitate JSDoc auto-completion. The method bodies are however absent. These classes are real JS constructs, however they will not be used in the code as this file will not be used in the code. Just having it open inside of VSCode creates the auto-completion feature!
