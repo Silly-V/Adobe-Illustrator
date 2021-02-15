@@ -1,4 +1,4 @@
-#Illustrator JSDoc VSCode Types
+# Illustrator JSDoc VSCode Types
 
 This project's objective is to enable non-TypeScript users to gain some benefit of VSCode's auto-completion intellisense by using JSDoc annotations.
 Content from [Types for Adobe](https://github.com/bbb999/Types-for-Adobe) was processed to transform TypeScript class declarations into mock javascript classes and type definitions.
