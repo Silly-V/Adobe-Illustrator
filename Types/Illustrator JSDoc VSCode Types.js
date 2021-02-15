@@ -4,6 +4,12 @@
  * @property {3} FULLSCREEN - Full screen without menu bar.
  * @property {1} MULTIWINDOW - Display multiple windows.
 */
+/** @type {ScreenMode} */
+const ScreenMode = {
+	DESKTOP : 2,
+	FULLSCREEN : 3,
+	MULTIWINDOW : 1,
+};
 
 /**
  * @typedef {Object} ColorType - The color model.
@@ -15,12 +21,27 @@
  * @property {5} RGB -
  * @property {3} SPOT -
 */
+/** @type {ColorType} */
+const ColorType = {
+	CMYK : 1,
+	GRADIENT : 4,
+	GRAY : 0,
+	None : 6,
+	PATTERN : 2,
+	RGB : 5,
+	SPOT : 3,
+};
 
 /**
  * @typedef {Object} DocumentColorSpace - The color spaces available for documents.
  * @property {2} CMYK - CMYK document color space.
  * @property {1} RGB - RGB document color space.
 */
+/** @type {DocumentColorSpace} */
+const DocumentColorSpace = {
+	CMYK : 2,
+	RGB : 1,
+};
 
 /**
  * @typedef {Object} DocumentPresetType - The preset types available for new documents.
@@ -31,6 +52,15 @@
  * @property {4} Video - The default Video and Film document preset.
  * @property {2} Web - The default Web document preset.
 */
+/** @type {DocumentPresetType} */
+const DocumentPresetType = {
+	BasicCMYK : 5,
+	BasicRGB : 6,
+	Mobile : 3,
+	Print : 1,
+	Video : 4,
+	Web : 2,
+};
 
 /**
  * @typedef {Object} DocumentRasterResolution - The raster resolutions available when creating a new document.
@@ -38,6 +68,12 @@
  * @property {2} MediumResolution - Medium raster resolution, 150 PPI.
  * @property {1} ScreenResolution - Low raster resolution, 72 PPI.
 */
+/** @type {DocumentRasterResolution} */
+const DocumentRasterResolution = {
+	HighResolution : 3,
+	MediumResolution : 2,
+	ScreenResolution : 1,
+};
 
 /**
  * @typedef {Object} DocumentTransparencyGrid - The transparency grid for the new document, in video presets.
@@ -51,6 +87,18 @@
  * @property {8} TransparencyGridPurple - Purple grids.
  * @property {4} TransparencyGridRed - Red grids.
 */
+/** @type {DocumentTransparencyGrid} */
+const DocumentTransparencyGrid = {
+	TransparencyGridBlue : 7,
+	TransparencyGridDark : 3,
+	TransparencyGridGreen : 6,
+	TransparencyGridLight : 1,
+	TransparencyGridMedium : 2,
+	TransparencyGridNone : 0,
+	TransparencyGridOrange : 5,
+	TransparencyGridPurple : 8,
+	TransparencyGridRed : 4,
+};
 
 /**
  * @typedef {Object} DocumentPreviewMode - The preview modes available when creating a new document.
@@ -58,6 +106,12 @@
  * @property {3} OverprintPreview - Overprint Preview Mode.
  * @property {2} PixelPreview - Pixel Preview mode.
 */
+/** @type {DocumentPreviewMode} */
+const DocumentPreviewMode = {
+	DefaultPreview : 1,
+	OverprintPreview : 3,
+	PixelPreview : 2,
+};
 
 /**
  * @typedef {Object} DocumentArtboardLayout - The layout of artboards in document.
@@ -69,6 +123,16 @@
  * @property {7} RLRow - Arrange artboards in a single row from right-to-left.
  * @property {3} Row - Arrange artboards in a single row.
 */
+/** @type {DocumentArtboardLayout} */
+const DocumentArtboardLayout = {
+	Column : 4,
+	GridByCol : 2,
+	GridByRow : 1,
+	RLGridByCol : 6,
+	RLGridByRow : 5,
+	RLRow : 7,
+	Row : 3,
+};
 
 /**
  * @typedef {Object} ImageColorSpace - The color space.
@@ -80,6 +144,16 @@
  * @property {2} RGB - RGB color space.
  * @property {5} Separation - Separation color space.
 */
+/** @type {ImageColorSpace} */
+const ImageColorSpace = {
+	CMYK : 3,
+	DeviceN : 6,
+	GrayScale : 1,
+	Indexed : 7,
+	LAB : 4,
+	RGB : 2,
+	Separation : 5,
+};
 
 /**
  * @typedef {Object} StrokeCap - The stroke cap.
@@ -87,6 +161,12 @@
  * @property {3} PROJECTINGENDCAP - Projecting cap.
  * @property {2} ROUNDENDCAP - Rounded cap.
 */
+/** @type {StrokeCap} */
+const StrokeCap = {
+	BUTTENDCAP : 1,
+	PROJECTINGENDCAP : 3,
+	ROUNDENDCAP : 2,
+};
 
 /**
  * @typedef {Object} StrokeJoin - The stroke joint.
@@ -94,6 +174,12 @@
  * @property {1} MITERENDJOIN - Mitered joints.
  * @property {2} ROUNDENDJOIN - Rounded joints.
 */
+/** @type {StrokeJoin} */
+const StrokeJoin = {
+	BEVELENDJOIN : 3,
+	MITERENDJOIN : 1,
+	ROUNDENDJOIN : 2,
+};
 
 /**
  * @typedef {Object} PathPointSelection - The path point selection state.
@@ -103,12 +189,25 @@
  * @property {1} NOSELECTION - Path point not selected.
  * @property {4} RIGHTDIRECTION - Right direction point selected.
 */
+/** @type {PathPointSelection} */
+const PathPointSelection = {
+	ANCHORPOINT : 2,
+	LEFTDIRECTION : 3,
+	LEFTRIGHTPOINT : 5,
+	NOSELECTION : 1,
+	RIGHTDIRECTION : 4,
+};
 
 /**
  * @typedef {Object} PointType - The path point type: smooth/corner.
  * @property {2} CORNER - Corner point.
  * @property {1} SMOOTH - Smooth path point.
 */
+/** @type {PointType} */
+const PointType = {
+	CORNER : 2,
+	SMOOTH : 1,
+};
 
 /**
  * @typedef {Object} TextType - The type of text art.
@@ -116,6 +215,12 @@
  * @property {2} PATHTEXT - Text on a path.
  * @property {0} POINTTEXT - Text from a point.
 */
+/** @type {TextType} */
+const TextType = {
+	AREATEXT : 1,
+	PATHTEXT : 2,
+	POINTTEXT : 0,
+};
 
 /**
  * @typedef {Object} TextAntialias - The type of text antialiasing.
@@ -124,24 +229,46 @@
  * @property {2} SHARP - Text within an area.
  * @property {4} STRONG - Text on a path.
 */
+/** @type {TextAntialias} */
+const TextAntialias = {
+	CRISP : 3,
+	NONE : 1,
+	SHARP : 2,
+	STRONG : 4,
+};
 
 /**
  * @typedef {Object} GradientType - The gradient type.
  * @property {1} LINEAR - Linear gradient.
  * @property {2} RADIAL -
 */
+/** @type {GradientType} */
+const GradientType = {
+	LINEAR : 1,
+	RADIAL : 2,
+};
 
 /**
  * @typedef {Object} TextOrientation - The orientation.
  * @property {0} HORIZONTAL - Horizontal orientation.
  * @property {1} VERTICAL - Vertical orientation.
 */
+/** @type {TextOrientation} */
+const TextOrientation = {
+	HORIZONTAL : 0,
+	VERTICAL : 1,
+};
 
 /**
  * @typedef {Object} CropOptions - The crop style.
  * @property {2} Japanese - Japanese crop style.
  * @property {1} Standard - Standard crop style.
 */
+/** @type {CropOptions} */
+const CropOptions = {
+	Japanese : 2,
+	Standard : 1,
+};
 
 /**
  * @typedef {Object} RasterLinkState - The raster link state.
@@ -149,6 +276,12 @@
  * @property {3} DATAMODIFIED - Image data has been modified.
  * @property {1} NODATA - Image data is not set.
 */
+/** @type {RasterLinkState} */
+const RasterLinkState = {
+	DATAFROMFILE : 2,
+	DATAMODIFIED : 3,
+	NODATA : 1,
+};
 
 /**
  * @typedef {Object} TabStopAlignment - The tab alignment.
@@ -157,6 +290,13 @@
  * @property {0} Left -
  * @property {2} Right -
 */
+/** @type {TabStopAlignment} */
+const TabStopAlignment = {
+	Center : 1,
+	Decimal : 3,
+	Left : 0,
+	Right : 2,
+};
 
 /**
  * @typedef {Object} Justification - The paragraph alignment.
@@ -168,6 +308,16 @@
  * @property {0} LEFT -
  * @property {1} RIGHT -
 */
+/** @type {Justification} */
+const Justification = {
+	CENTER : 2,
+	FULLJUSTIFY : 6,
+	FULLJUSTIFYLASTLINECENTER : 5,
+	FULLJUSTIFYLASTLINELEFT : 3,
+	FULLJUSTIFYLASTLINERIGHT : 4,
+	LEFT : 0,
+	RIGHT : 1,
+};
 
 /**
  * @typedef {Object} Transformation - The transformation type.
@@ -182,6 +332,19 @@
  * @property {2} TOPLEFT - Transform relative to the object's top left corner.
  * @property {8} TOPRIGHT - Transform relative to the object's top right corner.
 */
+/** @type {Transformation} */
+const Transformation = {
+	BOTTOM : 7,
+	BOTTOMLEFT : 4,
+	BOTTOMRIGHT : 10,
+	CENTER : 6,
+	DOCUMENTORIGIN : 1,
+	LEFT : 3,
+	RIGHT : 9,
+	TOP : 5,
+	TOPLEFT : 2,
+	TOPRIGHT : 8,
+};
 
 /**
  * @typedef {Object} LibraryType - Illustrator library types.
@@ -191,6 +354,14 @@
  * @property {2} SWATCHES - Illustrator swatches library.
  * @property {5} SYMBOLS - Illustrator symbols library.
 */
+/** @type {LibraryType} */
+const LibraryType = {
+	BRUSHES : 3,
+	GRAPHICSTYLES : 4,
+	ILLUSTRATORARTWORK : 1,
+	SWATCHES : 2,
+	SYMBOLS : 5,
+};
 
 /**
  * @typedef {Object} DocumentType - Savable document types.
@@ -199,6 +370,13 @@
  * @property {1} ILLUSTRATOR - Illustrator file format.
  * @property {3} PDF - Acrobat PDF file format.
 */
+/** @type {DocumentType} */
+const DocumentType = {
+	EPS : 2,
+	FXG : 4,
+	ILLUSTRATOR : 1,
+	PDF : 3,
+};
 
 /**
  * @typedef {Object} ExportType - Export file types.
@@ -213,6 +391,19 @@
  * @property {9} TIFF - TIFF export file format.
  * @property {10} WOSVG - Web Optimized SVG export file format.
 */
+/** @type {ExportType} */
+const ExportType = {
+	AUTOCAD : 8,
+	FLASH : 7,
+	GIF : 6,
+	JPEG : 1,
+	PHOTOSHOP : 2,
+	PNG24 : 5,
+	PNG8 : 4,
+	SVG : 3,
+	TIFF : 9,
+	WOSVG : 10,
+};
 
 /**
  * @typedef {Object} ColorReductionMethod - Method used to reduce color for PNG8 and GIF export formats.
@@ -221,6 +412,13 @@
  * @property {0x536c7476} SELECTIVE -
  * @property {0x57656220} WEB -
 */
+/** @type {ColorReductionMethod} */
+const ColorReductionMethod = {
+	ADAPTIVE : 0x41647074,
+	PERCEPTUAL : 0x50726370,
+	SELECTIVE : 0x536c7476,
+	WEB : 0x57656220,
+};
 
 /**
  * @typedef {Object} ColorDitherMethod - Method used to dither colors for PNG8 and GIF export formats.
@@ -229,6 +427,13 @@
  * @property {0x4e6f6e65} NOREDUCTION - No dithering.
  * @property {0x5074726e} PATTERNDITHER -
 */
+/** @type {ColorDitherMethod} */
+const ColorDitherMethod = {
+	DIFFUSION : 0x4466736e,
+	NOISE : 0x424e6f69,
+	NOREDUCTION : 0x4e6f6e65,
+	PATTERNDITHER : 0x5074726e,
+};
 
 /**
  * @typedef {Object} Compatibility - The compatibility type.
@@ -245,6 +450,21 @@
  * @property {9} ILLUSTRATOR9 -
  * @property {3} JAPANESEVERSION3 -
 */
+/** @type {Compatibility} */
+const Compatibility = {
+	ILLUSTRATOR10 : 10,
+	ILLUSTRATOR11 : 11,
+	ILLUSTRATOR12 : 12,
+	ILLUSTRATOR13 : 13,
+	ILLUSTRATOR14 : 14,
+	ILLUSTRATOR15 : 15,
+	ILLUSTRATOR16 : 16,
+	ILLUSTRATOR17 : 17,
+	ILLUSTRATOR3 : 3,
+	ILLUSTRATOR8 : 8,
+	ILLUSTRATOR9 : 9,
+	JAPANESEVERSION3 : 3,
+};
 
 /**
  * @typedef {Object} PDFXStandard - This provides a means for matching the color characteristics of a PDF document.
@@ -256,6 +476,16 @@
  * @property {6} PDFX42007 - Supports a color-managed workflow, allowing the use of device-independent color in addition to CMYK and spot colors.
  * @property {1} PDFXNONE - The user isn't complying with any PDF standard.
 */
+/** @type {PDFXStandard} */
+const PDFXStandard = {
+	PDFX1A2001 : 2,
+	PDFX1A2003 : 3,
+	PDFX32001 : 4,
+	PDFX32002 : 4,
+	PDFX32003 : 5,
+	PDFX42007 : 6,
+	PDFXNONE : 1,
+};
 
 /**
  * @typedef {Object} PDFCompatibility - The PDF compatibility type.
@@ -265,12 +495,25 @@
  * @property {7} ACROBAT7 - Acrobat version 7.
  * @property {8} ACROBAT8 - Acrobat version 8.
 */
+/** @type {PDFCompatibility} */
+const PDFCompatibility = {
+	ACROBAT4 : 4,
+	ACROBAT5 : 5,
+	ACROBAT6 : 6,
+	ACROBAT7 : 7,
+	ACROBAT8 : 8,
+};
 
 /**
  * @typedef {Object} PhotoshopCompatibility - The Photoshop compatibility type.
  * @property {2} PHOTOSHOP6 - Photoshop version 6.
  * @property {1} PHOTOSHOP8 - Photoshop version 8.
 */
+/** @type {PhotoshopCompatibility} */
+const PhotoshopCompatibility = {
+	PHOTOSHOP6 : 2,
+	PHOTOSHOP8 : 1,
+};
 
 /**
  * @typedef {Object} CompressionQuality - The compression type.
@@ -300,6 +543,34 @@
  * @property {8} ZIP4BIT -
  * @property {9} ZIP8BIT -
 */
+/** @type {CompressionQuality} */
+const CompressionQuality = {
+	AUTOMATICJPEG2000HIGH : 18,
+	AUTOMATICJPEG2000LOSSLESS : 20,
+	AUTOMATICJPEG2000LOW : 16,
+	AUTOMATICJPEG2000MAXIMUM : 19,
+	AUTOMATICJPEG2000MEDIUM : 17,
+	AUTOMATICJPEG2000MINIMUM : 15,
+	AUTOMATICJPEGHIGH : 13,
+	AUTOMATICJPEGLOW : 11,
+	AUTOMATICJPEGMAXIMUM : 14,
+	AUTOMATICJPEGMEDIUM : 12,
+	AUTOMATICJPEGMINIMUM : 10,
+	JPEG2000HIGH : 24,
+	JPEG2000LOSSLESS : 26,
+	JPEG2000LOW : 22,
+	JPEG2000MAXIMUM : 25,
+	JPEG2000MEDIUM : 23,
+	JPEG2000MINIMUM : 21,
+	JPEGHIGH : 6,
+	JPEGLOW : 4,
+	JPEGMAXIMUM : 7,
+	JPEGMEDIUM : 5,
+	JPEGMINIMUM : 3,
+	None : 1,
+	ZIP4BIT : 8,
+	ZIP8BIT : 9,
+};
 
 /**
  * @typedef {Object} ColorConversion - PDF color conversion policy.
@@ -307,6 +578,12 @@
  * @property {1} COLORCONVERSIONTODEST - Converts all colors to the profile selected for Destination.
  * @property {0} None - Preserves color data as is.
 */
+/** @type {ColorConversion} */
+const ColorConversion = {
+	COLORCONVERSIONREPURPOSE : 2,
+	COLORCONVERSIONTODEST : 1,
+	None : 0,
+};
 
 /**
  * @typedef {Object} ColorDestination - PDF destination profile.
@@ -317,6 +594,15 @@
  * @property {4} COLORDESTINATIONWORKINGRGB - Preserves color numbers for untagged content in the same color space as the destination profile. Not available with CMS off.
  * @property {0} None - N/A.
 */
+/** @type {ColorDestination} */
+const ColorDestination = {
+	COLORDESTINATIONDOCCMYK : 1,
+	COLORDESTINATIONDOCRGB : 3,
+	COLORDESTINATIONPROFILE : 5,
+	COLORDESTINATIONWORKINGCMYK : 2,
+	COLORDESTINATIONWORKINGRGB : 4,
+	None : 0,
+};
 
 /**
  * @typedef {Object} ColorProfile - PDF ICC profile inclusion.
@@ -326,6 +612,14 @@
  * @property {2} LEAVEPROFILEUNCHANGED - Leave tagged items tagged, untagged items untagged.
  * @property {0} None - All profiles removed (embedProfile == false)
 */
+/** @type {ColorProfile} */
+const ColorProfile = {
+	INCLUDEALLPROFILE : 1,
+	INCLUDEDESTPROFILE : 4,
+	INCLUDERGBPROFILE : 3,
+	LEAVEPROFILEUNCHANGED : 2,
+	None : 0,
+};
 
 /**
  * @typedef {Object} MonochromeCompression - The monochrome compression type.
@@ -335,6 +629,14 @@
  * @property {0} None - Automatic compression.
  * @property {4} RUNLENGTH - RLE compression.
 */
+/** @type {MonochromeCompression} */
+const MonochromeCompression = {
+	CCIT3 : 1,
+	CCIT4 : 2,
+	MONOZIP : 3,
+	None : 0,
+	RUNLENGTH : 4,
+};
 
 /**
  * @typedef {Object} PDFTrimMarkWeight - Pdf trim mark weight options.
@@ -342,12 +644,23 @@
  * @property {2} TRIMMARKWEIGHT025 -
  * @property {3} TRIMMARKWEIGHT05 -
 */
+/** @type {PDFTrimMarkWeight} */
+const PDFTrimMarkWeight = {
+	TRIMMARKWEIGHT0125 : 1,
+	TRIMMARKWEIGHT025 : 2,
+	TRIMMARKWEIGHT05 : 3,
+};
 
 /**
  * @typedef {Object} PDFOverprint - Pdf overprint options.
  * @property {2} DISCARDPDFOVERPRINT - Discard overprint.
  * @property {1} PRESERVEPDFOVERPRINT - Preserve overprint.
 */
+/** @type {PDFOverprint} */
+const PDFOverprint = {
+	DISCARDPDFOVERPRINT : 2,
+	PRESERVEPDFOVERPRINT : 1,
+};
 
 /**
  * @typedef {Object} PDFPrintAllowedEnum - Pdf print permissions.
@@ -357,6 +670,14 @@
  * @property {5} PRINT40HIGHRESOLUTION - Print high resolution allowed - 40bit.
  * @property {4} PRINT40NONE - Printing allowed none - 40bit.
 */
+/** @type {PDFPrintAllowedEnum} */
+const PDFPrintAllowedEnum = {
+	PRINT128HIGHRESOLUTION : 3,
+	PRINT128LOWRESOLUTION : 2,
+	PRINT128NONE : 1,
+	PRINT40HIGHRESOLUTION : 5,
+	PRINT40NONE : 4,
+};
 
 /**
  * @typedef {Object} PDFChangesAllowedEnum - Options available for making changes to a pdf document.
@@ -370,6 +691,18 @@
  * @property {6} CHANGE40NONE - No changes allowed - 40bit.
  * @property {8} CHANGE40PAGELAYOUT - Page layout allowed - 40bit.
 */
+/** @type {PDFChangesAllowedEnum} */
+const PDFChangesAllowedEnum = {
+	CHANGE128ANYCHANGES : 5,
+	CHANGE128COMMENTING : 4,
+	CHANGE128EDITPAGE : 2,
+	CHANGE128FILLFORM : 3,
+	CHANGE128NONE : 1,
+	CHANGE40ANYCHANGES : 9,
+	CHANGE40COMMENTING : 7,
+	CHANGE40NONE : 6,
+	CHANGE40PAGELAYOUT : 8,
+};
 
 /**
  * @typedef {Object} DownsampleMethod - The resample type.
@@ -378,6 +711,13 @@
  * @property {0} NODOWNSAMPLE - Downsampling.
  * @property {2} SUBSAMPLE - Subsampling.
 */
+/** @type {DownsampleMethod} */
+const DownsampleMethod = {
+	AVERAGEDOWNSAMPLE : 1,
+	BICUBICDOWNSAMPLE : 3,
+	NODOWNSAMPLE : 0,
+	SUBSAMPLE : 2,
+};
 
 /**
  * @typedef {Object} EPSPreview - The preview type.
@@ -388,12 +728,26 @@
  * @property {1} None - No preview.
  * @property {5} TRANSPARENTCOLORTIFF - Transparent color PC preview (8 or later)
 */
+/** @type {EPSPreview} */
+const EPSPreview = {
+	BWMACINTOSH : 2,
+	BWTIFF : 4,
+	COLORMACINTOSH : 3,
+	COLORTIFF : 6,
+	None : 1,
+	TRANSPARENTCOLORTIFF : 5,
+};
 
 /**
  * @typedef {Object} EPSPostScriptLevelEnum - The PostScript levels available when saving EPS files.
  * @property {2} LEVEL2 - PostScript Level 2.
  * @property {3} LEVEL3 - PostScript Level 3.
 */
+/** @type {EPSPostScriptLevelEnum} */
+const EPSPostScriptLevelEnum = {
+	LEVEL2 : 2,
+	LEVEL3 : 3,
+};
 
 /**
  * @typedef {Object} PrinterPostScriptLevelEnum - The PostScript levels supported by various printers.
@@ -401,6 +755,12 @@
  * @property {2} PSLEVEL2 - PostScript Level 2.
  * @property {3} PSLEVEL3 - PostScript Level 3.
 */
+/** @type {PrinterPostScriptLevelEnum} */
+const PrinterPostScriptLevelEnum = {
+	PSLEVEL1 : 1,
+	PSLEVEL2 : 2,
+	PSLEVEL3 : 3,
+};
 
 /**
  * @typedef {Object} SaveOptions - The options that may be applied when saving a file.
@@ -408,6 +768,12 @@
  * @property {3} PROMPTTOSAVECHANGES - Ask the user whether to save.
  * @property {1} SAVECHANGES - Save changes.
 */
+/** @type {SaveOptions} */
+const SaveOptions = {
+	DONOTSAVECHANGES : 2,
+	PROMPTTOSAVECHANGES : 3,
+	SAVECHANGES : 1,
+};
 
 /**
  * @typedef {Object} RulerUnits -
@@ -420,6 +786,17 @@
  * @property {7} Qs - Ruler units are measured in Qs.
  * @property {1} Unknown - Ruler units are unknown.
 */
+/** @type {RulerUnits} */
+const RulerUnits = {
+	Centimeters : 3,
+	Inches : 2,
+	Millimeters : 6,
+	Picas : 5,
+	Pixels : 8,
+	Points : 4,
+	Qs : 7,
+	Unknown : 1,
+};
 
 /**
  * @typedef {Object} BlendModes - Blend modes used when compositing an object.
@@ -440,6 +817,25 @@
  * @property {2} SCREEN -
  * @property {4} SOFTLIGHT -
 */
+/** @type {BlendModes} */
+const BlendModes = {
+	COLORBLEND : 14,
+	COLORBURN : 7,
+	COLORDODGE : 6,
+	DARKEN : 8,
+	DIFFERENCE : 10,
+	EXCLUSION : 11,
+	HARDLIGHT : 5,
+	HUE : 12,
+	LIGHTEN : 9,
+	LUMINOSITY : 15,
+	MULTIPLY : 1,
+	NORMAL : 0,
+	OVERLAY : 3,
+	SATURATIONBLEND : 13,
+	SCREEN : 2,
+	SOFTLIGHT : 4,
+};
 
 /**
  * @typedef {Object} KnockoutState - Knockout state of a page item.
@@ -448,6 +844,13 @@
  * @property {2} INHERITED - Knockout state inherited from group?
  * @property {-1} Unknown - Unknown/uninitialized knockout state.
 */
+/** @type {KnockoutState} */
+const KnockoutState = {
+	DISABLED : 0,
+	ENABLED : 1,
+	INHERITED : 2,
+	Unknown : -1,
+};
 
 /**
  * @typedef {Object} ZOrderMethod - How to re-arrange the art item.
@@ -456,6 +859,13 @@
  * @property {3} SENDBACKWARD - Move art one step backwards in it's group or layer.
  * @property {4} SENDTOBACK - Move art to back of it's group or layer.
 */
+/** @type {ZOrderMethod} */
+const ZOrderMethod = {
+	BRINGFORWARD : 2,
+	BRINGTOFRONT : 1,
+	SENDBACKWARD : 3,
+	SENDTOBACK : 4,
+};
 
 /**
  * @typedef {Object} SVGDTDVersion - The version of the SVG DTD.
@@ -466,12 +876,26 @@
  * @property {4} SVGTINY1_1PLUS - SVG Tiny 1.1 Plus.
  * @property {6} SVGTINY1_2 - SVG Tiny 1.2.
 */
+/** @type {SVGDTDVersion} */
+const SVGDTDVersion = {
+	SVG1_0 : 1,
+	SVG1_1 : 2,
+	SVGBASIC1_1 : 5,
+	SVGTINY1_1 : 3,
+	SVGTINY1_1PLUS : 4,
+	SVGTINY1_2 : 6,
+};
 
 /**
  * @typedef {Object} SVGFontType - What font type to include with the file?
  * @property {3} OUTLINEFONT -
  * @property {2} SVGFONT -
 */
+/** @type {SVGFontType} */
+const SVGFontType = {
+	OUTLINEFONT : 3,
+	SVGFONT : 2,
+};
 
 /**
  * @typedef {Object} SVGFontSubsetting - What fonts to include with the file?
@@ -483,6 +907,16 @@
  * @property {6} GLYPHSUSEDPLUSROMAN -
  * @property {1} None - Use system fonts.
 */
+/** @type {SVGFontSubsetting} */
+const SVGFontSubsetting = {
+	ALLGLYPHS : 7,
+	COMMONENGLISH : 3,
+	COMMONROMAN : 5,
+	GLYPHSUSED : 2,
+	GLYPHSUSEDPLUSENGLISH : 4,
+	GLYPHSUSEDPLUSROMAN : 6,
+	None : 1,
+};
 
 /**
  * @typedef {Object} SVGDocumentEncoding -
@@ -490,6 +924,12 @@
  * @property {3} UTF16 -
  * @property {2} UTF8 -
 */
+/** @type {SVGDocumentEncoding} */
+const SVGDocumentEncoding = {
+	ASCII : 1,
+	UTF16 : 3,
+	UTF8 : 2,
+};
 
 /**
  * @typedef {Object} SVGCSSPropertyLocation -
@@ -498,6 +938,13 @@
  * @property {1} STYLEATTRIBUTES -
  * @property {3} STYLEELEMENTS -
 */
+/** @type {SVGCSSPropertyLocation} */
+const SVGCSSPropertyLocation = {
+	ENTITIES : 2,
+	PRESENTATIONATTRIBUTES : 4,
+	STYLEATTRIBUTES : 1,
+	STYLEELEMENTS : 3,
+};
 
 /**
  * @typedef {Object} SVGIdType - Type of SVG Id.
@@ -505,6 +952,12 @@
  * @property {1} SVGIDREGULAR -
  * @property {2} SVGIDUNIQUE -
 */
+/** @type {SVGIdType} */
+const SVGIdType = {
+	SVGIDMINIMAL : 0,
+	SVGIDREGULAR : 1,
+	SVGIDUNIQUE : 2,
+};
 
 /**
  * @typedef {Object} RasterImageLocation - Decide where the raster images will be stored.
@@ -512,12 +965,23 @@
  * @property {1} LINK -
  * @property {2} PRESERVE -
 */
+/** @type {RasterImageLocation} */
+const RasterImageLocation = {
+	EMBED : 0,
+	LINK : 1,
+	PRESERVE : 2,
+};
 
 /**
  * @typedef {Object} OutputFlattening - How should transparency be flattened for pre-AI9 file formats.
  * @property {1} PRESERVEAPPEARANCE -
  * @property {0} PRESERVEPATHS - Discard transparency.
 */
+/** @type {OutputFlattening} */
+const OutputFlattening = {
+	PRESERVEAPPEARANCE : 1,
+	PRESERVEPATHS : 0,
+};
 
 /**
  * @typedef {Object} ColorModel - Color model of the custom color.
@@ -525,6 +989,12 @@
  * @property {0} REGISTRATION - Registration color (prints on in all separations)
  * @property {2} SPOT - Spot color (separate ink)
 */
+/** @type {ColorModel} */
+const ColorModel = {
+	PROCESS : 1,
+	REGISTRATION : 0,
+	SPOT : 2,
+};
 
 /**
  * @typedef {Object} SpotColorKind - Custom color kind of the spot color.
@@ -532,6 +1002,12 @@
  * @property {2} SPOTLAB - Lab color. Only valid for spot colors.
  * @property {1} SPOTRGB - Solid color, expressed as three RGB values.
 */
+/** @type {SpotColorKind} */
+const SpotColorKind = {
+	SPOTCMYK : 0,
+	SPOTLAB : 2,
+	SPOTRGB : 1,
+};
 
 /**
  * @typedef {Object} FlashExportStyle -
@@ -541,6 +1017,14 @@
  * @property {2} LAYERSASFRAMES - Illustrator layers to Flash frames.
  * @property {4} LAYERSASSYMBOLS - Illustrator layers to Flash Symbols.
 */
+/** @type {FlashExportStyle} */
+const FlashExportStyle = {
+	ARTBOARDSTOFILES : 5,
+	ASFLASHFILE : 1,
+	LAYERSASFILES : 3,
+	LAYERSASFRAMES : 2,
+	LAYERSASSYMBOLS : 4,
+};
 
 /**
  * @typedef {Object} ArtClippingOption - How the arts should be clipped.
@@ -548,6 +1032,12 @@
  * @property {1} OUTPUTARTBOUNDS - Output size is the size of the artwork.
  * @property {3} OUTPUTCROPRECTBOUNDS - Output size is the size of the crop area.
 */
+/** @type {ArtClippingOption} */
+const ArtClippingOption = {
+	OUTPUTARTBOARDBOUNDS : 2,
+	OUTPUTARTBOUNDS : 1,
+	OUTPUTCROPRECTBOUNDS : 3,
+};
 
 /**
  * @typedef {Object} FlashExportVersion - Version of the SWF File to be exported.
@@ -561,18 +1051,40 @@
  * @property {8} FLASHVERSION8 - SWF Version 8.
  * @property {9} FLASHVERSION9 - SWF Version 9.
 */
+/** @type {FlashExportVersion} */
+const FlashExportVersion = {
+	FLASHVERSION1 : 1,
+	FLASHVERSION2 : 2,
+	FLASHVERSION3 : 3,
+	FLASHVERSION4 : 4,
+	FLASHVERSION5 : 5,
+	FLASHVERSION6 : 6,
+	FLASHVERSION7 : 7,
+	FLASHVERSION8 : 8,
+	FLASHVERSION9 : 9,
+};
 
 /**
  * @typedef {Object} FlashImageFormat -
  * @property {1} LOSSLESS -
  * @property {2} LOSSY -
 */
+/** @type {FlashImageFormat} */
+const FlashImageFormat = {
+	LOSSLESS : 1,
+	LOSSY : 2,
+};
 
 /**
  * @typedef {Object} LayerOrderType -
  * @property {1} BOTTOMUP -
  * @property {2} TOPDOWN -
 */
+/** @type {LayerOrderType} */
+const LayerOrderType = {
+	BOTTOMUP : 1,
+	TOPDOWN : 2,
+};
 
 /**
  * @typedef {Object} BlendAnimationType -
@@ -580,18 +1092,34 @@
  * @property {1} INSEQUENCE -
  * @property {0} NOBLENDANIMATION - No blend animation.
 */
+/** @type {BlendAnimationType} */
+const BlendAnimationType = {
+	INBUILD : 2,
+	INSEQUENCE : 1,
+	NOBLENDANIMATION : 0,
+};
 
 /**
  * @typedef {Object} FlashJPEGMethod -
  * @property {2} Optimized -
  * @property {1} Standard -
 */
+/** @type {FlashJPEGMethod} */
+const FlashJPEGMethod = {
+	Optimized : 2,
+	Standard : 1,
+};
 
 /**
  * @typedef {Object} FlashPlaybackSecurity -
  * @property {1} PlaybackLocal -
  * @property {2} PlaybackNetwork -
 */
+/** @type {FlashPlaybackSecurity} */
+const FlashPlaybackSecurity = {
+	PlaybackLocal : 1,
+	PlaybackNetwork : 2,
+};
 
 /**
  * @typedef {Object} VariableKind -
@@ -601,12 +1129,25 @@
  * @property {1} Unknown -
  * @property {2} VISIBILITY -
 */
+/** @type {VariableKind} */
+const VariableKind = {
+	GRAPH : 5,
+	IMAGE : 4,
+	TEXTUAL : 3,
+	Unknown : 1,
+	VISIBILITY : 2,
+};
 
 /**
  * @typedef {Object} AutoCADExportFileFormat -
  * @property {1} DWG -
  * @property {0} DXF -
 */
+/** @type {AutoCADExportFileFormat} */
+const AutoCADExportFileFormat = {
+	DWG : 1,
+	DXF : 0,
+};
 
 /**
  * @typedef {Object} AutoCADCompatibility -
@@ -617,6 +1158,15 @@
  * @property {4} AutoCADRelease21 -
  * @property {5} AutoCADRelease24 -
 */
+/** @type {AutoCADCompatibility} */
+const AutoCADCompatibility = {
+	AutoCADRelease13 : 0,
+	AutoCADRelease14 : 1,
+	AutoCADRelease15 : 2,
+	AutoCADRelease18 : 3,
+	AutoCADRelease21 : 4,
+	AutoCADRelease24 : 5,
+};
 
 /**
  * @typedef {Object} AutoCADUnit -
@@ -627,6 +1177,15 @@
  * @property {5} Pixels -
  * @property {0} Points -
 */
+/** @type {AutoCADUnit} */
+const AutoCADUnit = {
+	Centimeters : 4,
+	Inches : 2,
+	Millimeters : 3,
+	Picas : 1,
+	Pixels : 5,
+	Points : 0,
+};
 
 /**
  * @typedef {Object} AutoCADColors -
@@ -635,18 +1194,35 @@
  * @property {0} Max8Colors -
  * @property {3} TrueColors -
 */
+/** @type {AutoCADColors} */
+const AutoCADColors = {
+	Max16Colors : 1,
+	Max256Colors : 2,
+	Max8Colors : 0,
+	TrueColors : 3,
+};
 
 /**
  * @typedef {Object} AutoCADRasterFormat -
  * @property {1} JPEG -
  * @property {0} PNG -
 */
+/** @type {AutoCADRasterFormat} */
+const AutoCADRasterFormat = {
+	JPEG : 1,
+	PNG : 0,
+};
 
 /**
  * @typedef {Object} AutoCADExportOption -
  * @property {1} MaximumEditability -
  * @property {0} PreserveAppearance -
 */
+/** @type {AutoCADExportOption} */
+const AutoCADExportOption = {
+	MaximumEditability : 1,
+	PreserveAppearance : 0,
+};
 
 /**
  * @typedef {Object} AutoCADGlobalScaleOption -
@@ -654,24 +1230,45 @@
  * @property {0} OriginalSize -
  * @property {2} ScaleByValue -
 */
+/** @type {AutoCADGlobalScaleOption} */
+const AutoCADGlobalScaleOption = {
+	FitArtboard : 1,
+	OriginalSize : 0,
+	ScaleByValue : 2,
+};
 
 /**
  * @typedef {Object} TIFFByteOrder - Byte Order of TIFF file.
  * @property {0} IBMPC -
  * @property {1} MACINTOSH -
 */
+/** @type {TIFFByteOrder} */
+const TIFFByteOrder = {
+	IBMPC : 0,
+	MACINTOSH : 1,
+};
 
 /**
  * @typedef {Object} UserInteractionLevel - COM user interaction enumeration.
  * @property {2} DISPLAYALERTS -
  * @property {-1} DONTDISPLAYALERTS -
 */
+/** @type {UserInteractionLevel} */
+const UserInteractionLevel = {
+	DISPLAYALERTS : 2,
+	DONTDISPLAYALERTS : -1,
+};
 
 /**
  * @typedef {Object} PolarityValues -
  * @property {-1} NEGATIVE -
  * @property {1} POSITIVE -
 */
+/** @type {PolarityValues} */
+const PolarityValues = {
+	NEGATIVE : -1,
+	POSITIVE : 1,
+};
 
 /**
  * @typedef {Object} JavaScriptExecutionMode - When should a JavaScript debugger be shown.
@@ -679,6 +1276,12 @@
  * @property {2} OnRuntimeError - Show the JavaScript debugger is a runtime error occurs.
  * @property {1} never - Never show the JavaScript debugger. Treat runtime errors by throwing a JavaScript exceptions.
 */
+/** @type {JavaScriptExecutionMode} */
+const JavaScriptExecutionMode = {
+	BeforeRunning : 3,
+	OnRuntimeError : 2,
+	never : 1,
+};
 
 /**
  * @typedef {Object} PrintArtworkDesignation - The artwork layers/objects to be printed.
@@ -686,6 +1289,12 @@
  * @property {1} VISIBLELAYERS - Print visible layers.
  * @property {0} VISIBLEPRINTABLELAYERS - Print visible printable layers.
 */
+/** @type {PrintArtworkDesignation} */
+const PrintArtworkDesignation = {
+	ALLLAYERS : 2,
+	VISIBLELAYERS : 1,
+	VISIBLEPRINTABLELAYERS : 0,
+};
 
 /**
  * @typedef {Object} PrintingBounds - The printing bounds type.
@@ -693,6 +1302,12 @@
  * @property {1} ARTWORKBOUNDS - Use artwork bounds.
  * @property {2} CROPBOUNDS - Use crop bounds.
 */
+/** @type {PrintingBounds} */
+const PrintingBounds = {
+	ARTBOARDBOUNDS : 0,
+	ARTWORKBOUNDS : 1,
+	CROPBOUNDS : 2,
+};
 
 /**
  * @typedef {Object} PrintColorSeparationMode - The color separation mode.
@@ -700,6 +1315,12 @@
  * @property {1} HOSTBASEDSEPARATION - The host based color separation mode.
  * @property {2} INRIPSEPARATION - The InRIP color separation mode.
 */
+/** @type {PrintColorSeparationMode} */
+const PrintColorSeparationMode = {
+	COMPOSITE : 0,
+	HOSTBASEDSEPARATION : 1,
+	INRIPSEPARATION : 2,
+};
 
 /**
  * @typedef {Object} PrintOrientation - The artwork printing orientation.
@@ -709,6 +1330,14 @@
  * @property {3} REVERSELANDSCAPE - Reverse landscape.
  * @property {2} REVERSEPORTRAIT - Reverse portrait.
 */
+/** @type {PrintOrientation} */
+const PrintOrientation = {
+	AUTOROTATE : 4,
+	LANDSCAPE : 1,
+	PORTRAIT : 0,
+	REVERSELANDSCAPE : 3,
+	REVERSEPORTRAIT : 2,
+};
 
 /**
  * @typedef {Object} PrintPosition - The artwork printing position on media.
@@ -722,6 +1351,18 @@
  * @property {1} TRANSLATETOPLEFT - Translate to the top left of media.
  * @property {3} TRANSLATETOPRIGHT - Translate to the top right of media.
 */
+/** @type {PrintPosition} */
+const PrintPosition = {
+	TRANSLATEBOTTOM : 8,
+	TRANSLATEBOTTOMLEFT : 7,
+	TRANSLATEBOTTOMRIGHT : 9,
+	TRANSLATECENTER : 5,
+	TRANSLATELEFT : 4,
+	TRANSLATERIGHT : 6,
+	TRANSLATETOP : 2,
+	TRANSLATETOPLEFT : 1,
+	TRANSLATETOPRIGHT : 3,
+};
 
 /**
  * @typedef {Object} PrintTiling - The page tiling type.
@@ -729,12 +1370,23 @@
  * @property {2} TILEIMAGEABLEAREAS - Tile imageable areas.
  * @property {0} TILESINGLEFULLPAGE - Tile single full page.
 */
+/** @type {PrintTiling} */
+const PrintTiling = {
+	TILEFULLPAGES : 1,
+	TILEIMAGEABLEAREAS : 2,
+	TILESINGLEFULLPAGE : 0,
+};
 
 /**
  * @typedef {Object} PageMarksTypes - The page marks style type.
  * @property {1} Japanese - Japanese page marks style.
  * @property {0} Roman - Roman page marks style.
 */
+/** @type {PageMarksTypes} */
+const PageMarksTypes = {
+	Japanese : 1,
+	Roman : 0,
+};
 
 /**
  * @typedef {Object} PrintFontDownloadMode - The printer font download mode.
@@ -742,6 +1394,12 @@
  * @property {0} DOWNLOADNONE - Download none.
  * @property {1} DOWNLOADSUBSET - Download subset.
 */
+/** @type {PrintFontDownloadMode} */
+const PrintFontDownloadMode = {
+	DOWNLOADCOMPLETE : 2,
+	DOWNLOADNONE : 0,
+	DOWNLOADSUBSET : 1,
+};
 
 /**
  * @typedef {Object} FontSubstitutionPolicy - The font substitution policy.
@@ -749,6 +1407,12 @@
  * @property {0} SUBSTITUTEOBLIQUE - Substitute oblique font.
  * @property {1} SUBSTITUTETINT - Substitute tint font.
 */
+/** @type {FontSubstitutionPolicy} */
+const FontSubstitutionPolicy = {
+	SUBSTITUTEDEVICE : 2,
+	SUBSTITUTEOBLIQUE : 0,
+	SUBSTITUTETINT : 1,
+};
 
 /**
  * @typedef {Object} PostScriptImageCompressionType - The PostScript image compression type.
@@ -756,6 +1420,12 @@
  * @property {2} JPEG - JPEG image compression.
  * @property {1} RLE - RLE image compression.
 */
+/** @type {PostScriptImageCompressionType} */
+const PostScriptImageCompressionType = {
+	IMAGECOMPRESSIONNONE : 0,
+	JPEG : 2,
+	RLE : 1,
+};
 
 /**
  * @typedef {Object} PrintColorProfile - The color profile type.
@@ -764,6 +1434,13 @@
  * @property {2} PRINTERPROFILE - Same as printer color profile.
  * @property {1} SOURCEPROFILE - Same as source color profile.
 */
+/** @type {PrintColorProfile} */
+const PrintColorProfile = {
+	CUSTOMPROFILE : 3,
+	OLDSTYLEPROFILE : 0,
+	PRINTERPROFILE : 2,
+	SOURCEPROFILE : 1,
+};
 
 /**
  * @typedef {Object} PrintColorIntent - The color intent type.
@@ -772,6 +1449,13 @@
  * @property {2} RELATIVECOLORIMETRIC - Relative colorimetric.
  * @property {1} SATURATIONINTENT - Saturation color intent.
 */
+/** @type {PrintColorIntent} */
+const PrintColorIntent = {
+	ABSOLUTECOLORIMETRIC : 3,
+	PERCEPTUALINTENT : 0,
+	RELATIVECOLORIMETRIC : 2,
+	SATURATIONINTENT : 1,
+};
 
 /**
  * @typedef {Object} PrinterTypeEnum - The printer type.
@@ -779,6 +1463,12 @@
  * @property {1} POSTSCRIPTPRINTER - PostScript printer.
  * @property {0} Unknown - Unknown printer type.
 */
+/** @type {PrinterTypeEnum} */
+const PrinterTypeEnum = {
+	NONPOSTSCRIPTPRINTER : 2,
+	POSTSCRIPTPRINTER : 1,
+	Unknown : 0,
+};
 
 /**
  * @typedef {Object} PrinterColorMode - The printer color mode.
@@ -786,6 +1476,12 @@
  * @property {0} COLORPRINTER - Color printer.
  * @property {1} GRAYSCALEPRINTER - Grayscale printer.
 */
+/** @type {PrinterColorMode} */
+const PrinterColorMode = {
+	BLACKANDWHITEPRINTER : 2,
+	COLORPRINTER : 0,
+	GRAYSCALEPRINTER : 1,
+};
 
 /**
  * @typedef {Object} InkPrintStatus - The ink printing status.
@@ -793,6 +1489,12 @@
  * @property {0} DISABLEINK - Disable the ink during print.
  * @property {1} ENABLEINK - Enable the ink during print.
 */
+/** @type {InkPrintStatus} */
+const InkPrintStatus = {
+	CONVERTINK : 2,
+	DISABLEINK : 0,
+	ENABLEINK : 1,
+};
 
 /**
  * @typedef {Object} InkType - The ink type.
@@ -802,6 +1504,14 @@
  * @property {1} MAGENTAINK - Magenta color ink.
  * @property {2} YELLOWINK - Yellow color ink.
 */
+/** @type {InkType} */
+const InkType = {
+	BLACKINK : 3,
+	CUSTOMINK : 4,
+	CYANINK : 0,
+	MAGENTAINK : 1,
+	YELLOWINK : 2,
+};
 
 /**
  * @typedef {Object} TrappingType - The trapping type.
@@ -810,6 +1520,13 @@
  * @property {2} OPAQUE - Opaque trapping type.
  * @property {1} TRANSPARENT - Transparent trapping type.
 */
+/** @type {TrappingType} */
+const TrappingType = {
+	IGNOREOPAQUE : 3,
+	NORMALTRAPPING : 0,
+	OPAQUE : 2,
+	TRANSPARENT : 1,
+};
 
 /**
  * @typedef {Object} AutoKernType - The auto kern type.
@@ -818,12 +1535,24 @@
  * @property {0} NOAUTOKERN - No auto kerning.
  * @property {2} OPTICAL - Optical kerning.
 */
+/** @type {AutoKernType} */
+const AutoKernType = {
+	AUTO : 1,
+	METRICSROMANONLY : 3,
+	NOAUTOKERN : 0,
+	OPTICAL : 2,
+};
 
 /**
  * @typedef {Object} AutoLeadingType - The auto leading type.
  * @property {0} BOTTOMTOBOTTOM - Roman leading type.
  * @property {1} TOPTOTOP - Japanese leading type.
 */
+/** @type {AutoLeadingType} */
+const AutoLeadingType = {
+	BOTTOMTOBOTTOM : 0,
+	TOPTOTOP : 1,
+};
 
 /**
  * @typedef {Object} CaseChangeType - The case change type.
@@ -832,6 +1561,13 @@
  * @property {2} TITLECASE - Change to title case.
  * @property {0} UPPERCASE - Change to upper case.
 */
+/** @type {CaseChangeType} */
+const CaseChangeType = {
+	LOWERCASE : 1,
+	SENTENCECASE : 3,
+	TITLECASE : 2,
+	UPPERCASE : 0,
+};
 
 /**
  * @typedef {Object} FontCapsOption - The font capitalization option.
@@ -840,6 +1576,13 @@
  * @property {0} NORMALCAPS - Normal caps.
  * @property {1} SMALLCAPS - Small caps.
 */
+/** @type {FontCapsOption} */
+const FontCapsOption = {
+	ALLCAPS : 2,
+	ALLSMALLCAPS : 3,
+	NORMALCAPS : 0,
+	SMALLCAPS : 1,
+};
 
 /**
  * @typedef {Object} FontBaselineOption - The font baseline option.
@@ -847,6 +1590,12 @@
  * @property {2} SUBSCRIPT - Fauxed subscript baseline.
  * @property {1} SUPERSCRIPT - Fauxed superscript baseline.
 */
+/** @type {FontBaselineOption} */
+const FontBaselineOption = {
+	NORMALBASELINE : 0,
+	SUBSCRIPT : 2,
+	SUPERSCRIPT : 1,
+};
 
 /**
  * @typedef {Object} FontOpenTypePositionOption - The OpenType font position option.
@@ -856,6 +1605,14 @@
  * @property {2} OPENTYPESUBSCRIPT - OpenType subscript position.
  * @property {1} OPENTYPESUPERSCRIPT - OpenType superscript position.
 */
+/** @type {FontOpenTypePositionOption} */
+const FontOpenTypePositionOption = {
+	DENOMINATOR : 4,
+	NUMERATOR : 3,
+	OPENTYPEDEFAULT : 0,
+	OPENTYPESUBSCRIPT : 2,
+	OPENTYPESUPERSCRIPT : 1,
+};
 
 /**
  * @typedef {Object} FigureStyleType - The figure style type.
@@ -865,6 +1622,14 @@
  * @property {1} TABULAR - Tabular lining style.
  * @property {4} TABULAROLDSTYLE - Tabular oldstyle.
 */
+/** @type {FigureStyleType} */
+const FigureStyleType = {
+	DEFAULTFIGURESTYLE : 0,
+	PROPORTIONAL : 3,
+	PROPORTIONALOLDSTYLE : 2,
+	TABULAR : 1,
+	TABULAROLDSTYLE : 4,
+};
 
 /**
  * @typedef {Object} BaselineDirectionType - The baseline direction type.
@@ -872,6 +1637,12 @@
  * @property {3} TateChuYoko -
  * @property {2} VerticalRotated -
 */
+/** @type {BaselineDirectionType} */
+const BaselineDirectionType = {
+	Standard : 1,
+	TateChuYoko : 3,
+	VerticalRotated : 2,
+};
 
 /**
  * @typedef {Object} LanguageType - The language of text.
@@ -922,6 +1693,55 @@
  * @property {14} UKENGLISH -
  * @property {19} UKRANIAN -
 */
+/** @type {LanguageType} */
+const LanguageType = {
+	ARABIC : 39,
+	BENGALIINDIA : 51,
+	BOKMALNORWEGIAN : 8,
+	BRAZILLIANPORTUGUESE : 11,
+	BULGARIAN : 20,
+	CANADIANFRENCH : 3,
+	CATALAN : 17,
+	CHINESE : 29,
+	CZECH : 22,
+	DANISH : 16,
+	DUTCH : 15,
+	DUTCH2005REFORM : 43,
+	ENGLISH : 0,
+	FARSI : 41,
+	FINNISH : 1,
+	GERMAN2006REFORM : 42,
+	GREEK : 25,
+	GUJARATI : 53,
+	HINDI : 49,
+	HUNGARIAN : 28,
+	ICELANDIC : 27,
+	ITALIAN : 7,
+	JAPANESE : 30,
+	KANNADA : 57,
+	MALAYALAM : 58,
+	MARATHI : 50,
+	NYNORSKNORWEGIAN : 9,
+	OLDGERMAN : 5,
+	ORIYA : 54,
+	POLISH : 23,
+	PUNJABI : 52,
+	RUMANIAN : 24,
+	RUSSIAN : 18,
+	SERBIAN : 21,
+	SPANISH : 12,
+	STANDARDFRENCH : 2,
+	STANDARDGERMAN : 4,
+	STANDARDPORTUGUESE : 10,
+	SWEDISH : 13,
+	SWISSGERMAN : 6,
+	SWISSGERMAN2006REFORM : 44,
+	TAMIL : 55,
+	TELUGU : 56,
+	TURKISH : 26,
+	UKENGLISH : 14,
+	UKRANIAN : 19,
+};
 
 /**
  * @typedef {Object} AlternateGlyphsForm - The alternate glyphs form of text.
@@ -938,6 +1758,21 @@
  * @property {6} THIRDWIDTH -
  * @property {1} TRADITIONAL -
 */
+/** @type {AlternateGlyphsForm} */
+const AlternateGlyphsForm = {
+	DEFAULTFORM : 0,
+	EXPERT : 2,
+	FULLWIDTH : 8,
+	HALFWIDTH : 5,
+	JIS04FORM : 11,
+	JIS78FORM : 3,
+	JIS83FORM : 4,
+	JIS90FORM : 10,
+	PROPORTIONALWIDTH : 9,
+	QUARTERWIDTH : 7,
+	THIRDWIDTH : 6,
+	TRADITIONAL : 1,
+};
 
 /**
  * @typedef {Object} StyleRunAlignmentType - The style run alignment.
@@ -948,6 +1783,15 @@
  * @property {4} icfTop -
  * @property {5} top -
 */
+/** @type {StyleRunAlignmentType} */
+const StyleRunAlignmentType = {
+	ROMANBASELINE : 2,
+	bottom : 0,
+	center : 3,
+	icfBottom : 1,
+	icfTop : 4,
+	top : 5,
+};
 
 /**
  * @typedef {Object} WariChuJustificationType - The Wari-Chu alignment type.
@@ -960,6 +1804,17 @@
  * @property {3} WARICHUFULLJUSTIFYLASTLINELEFT -
  * @property {4} WARICHUFULLJUSTIFYLASTLINERIGHT -
 */
+/** @type {WariChuJustificationType} */
+const WariChuJustificationType = {
+	Center : 2,
+	Left : 0,
+	Right : 1,
+	WARICHUAUTOJUSTIFY : 7,
+	WARICHUFULLJUSTIFY : 6,
+	WARICHUFULLJUSTIFYLASTLINECENTER : 5,
+	WARICHUFULLJUSTIFYLASTLINELEFT : 3,
+	WARICHUFULLJUSTIFYLASTLINERIGHT : 4,
+};
 
 /**
  * @typedef {Object} BurasagariTypeEnum - The Burasagari type.
@@ -967,6 +1822,12 @@
  * @property {0} None -
  * @property {1} Standard -
 */
+/** @type {BurasagariTypeEnum} */
+const BurasagariTypeEnum = {
+	Forced : 2,
+	None : 0,
+	Standard : 1,
+};
 
 /**
  * @typedef {Object} KinsokuOrderEnum - The preferred Kinsoku order.
@@ -974,6 +1835,12 @@
  * @property {1} PUSHOUTFIRST -
  * @property {2} PUSHOUTONLY -
 */
+/** @type {KinsokuOrderEnum} */
+const KinsokuOrderEnum = {
+	PUSHIN : 0,
+	PUSHOUTFIRST : 1,
+	PUSHOUTONLY : 2,
+};
 
 /**
  * @typedef {Object} PDFBoxType - Crop box.
@@ -984,12 +1851,26 @@
  * @property {4} PDFMEDIABOX - Crop to MediaBox. The media box is a natural size of the page. For example, the dimensions of A4 sheet of paper.
  * @property {2} PDFTRIMBOX - Crop to TrimBox. The trim box specifies the positioning of the page's content within the imposition.
 */
+/** @type {PDFBoxType} */
+const PDFBoxType = {
+	PDFARTBOX : 0,
+	PDFBLEEDBOX : 3,
+	PDFBOUNDINGBOX : 5,
+	PDFCROPBOX : 1,
+	PDFMEDIABOX : 4,
+	PDFTRIMBOX : 2,
+};
 
 /**
  * @typedef {Object} TracingMethodType - The tracing method: abutting and overlapping.
  * @property {0} TRACINGMETHODABUTTING - Tracing abutting method.
  * @property {1} TRACINGMETHODOVERLAPPING - Tracing overlapping method.
 */
+/** @type {TracingMethodType} */
+const TracingMethodType = {
+	TRACINGMETHODABUTTING : 0,
+	TRACINGMETHODOVERLAPPING : 1,
+};
 
 /**
  * @typedef {Object} TracingModeType - The tracing mode: color, grayscale, black and white.
@@ -997,12 +1878,23 @@
  * @property {0} TRACINGMODECOLOR - Color tracing mode.
  * @property {1} TRACINGMODEGRAY - Grayscale tracing mode.
 */
+/** @type {TracingModeType} */
+const TracingModeType = {
+	TRACINGMODEBLACKANDWHITE : 2,
+	TRACINGMODECOLOR : 0,
+	TRACINGMODEGRAY : 1,
+};
 
 /**
  * @typedef {Object} TracingColorType - The input color type Full Color or Limited colors.
  * @property {1} TRACINGFULLCOLOR - Use Full colors for Tracing.
  * @property {0} TRACINGLIMITEDCOLOR - Use Limited colors for Tracing.
 */
+/** @type {TracingColorType} */
+const TracingColorType = {
+	TRACINGFULLCOLOR : 1,
+	TRACINGLIMITEDCOLOR : 0,
+};
 
 /**
  * @typedef {Object} ViewType - Controls the type of vector view.
@@ -1012,6 +1904,14 @@
  * @property {0} TRACINGVIEWVECTORTRACINGRESULT - View artwork.
  * @property {3} TRACINGVIEWVECTORWITHTRANSPARENTIMAGE - View Outlines with Transparent Image.
 */
+/** @type {ViewType} */
+const ViewType = {
+	TRACINGVIEWIMAGE : 4,
+	TRACINGVIEWVECTOROUTLINES : 2,
+	TRACINGVIEWVECTOROUTLINESWITHTRACING : 1,
+	TRACINGVIEWVECTORTRACINGRESULT : 0,
+	TRACINGVIEWVECTORWITHTRANSPARENTIMAGE : 3,
+};
 
 /**
  * @typedef {Object} RasterizationColorModel - Controls the color model for the rasterization.
@@ -1019,6 +1919,12 @@
  * @property {1} DEFAULTCOLORMODEL - Rasterize in the default document color space.
  * @property {2} GRAYSCALE - Rasterize as grayscale image.
 */
+/** @type {RasterizationColorModel} */
+const RasterizationColorModel = {
+	BITMAP : 3,
+	DEFAULTCOLORMODEL : 1,
+	GRAYSCALE : 2,
+};
 
 /**
  * @typedef {Object} AntiAliasingMethod - Controls the type of antialiasing method used in the rasterization.
@@ -1026,6 +1932,12 @@
  * @property {0} None - No anti-aliasing allowed.
  * @property {2} TYPEOPTIMIZED - Optimize for the type object.
 */
+/** @type {AntiAliasingMethod} */
+const AntiAliasingMethod = {
+	ARTOPTIMIZED : 1,
+	None : 0,
+	TYPEOPTIMIZED : 2,
+};
 
 /**
  * @typedef {Object} ColorConvertPurpose - Denotes the purpose of color conversion using ConvertSmapleColor method.
@@ -1034,12 +1946,24 @@
  * @property {2} exportpurpose - Conversion options appropriate to creating an image for print or export.
  * @property {1} previewpurpose - Conversion options appropriate to creating an image for screen display.
 */
+/** @type {ColorConvertPurpose} */
+const ColorConvertPurpose = {
+	defaultpurpose : 0,
+	dummypurpose : 4,
+	exportpurpose : 2,
+	previewpurpose : 1,
+};
 
 /**
  * @typedef {Object} FXGVersion - The FXG file format version.
  * @property {1} VERSION1PT0 - FXG version 1.0.
  * @property {2} VERSION2PT0 - FXG version 2.0.
 */
+/** @type {FXGVersion} */
+const FXGVersion = {
+	VERSION1PT0 : 1,
+	VERSION2PT0 : 2,
+};
 
 /**
  * @typedef {Object} FiltersPreservePolicy - Filters preserve policy used by FXG file format.
@@ -1047,6 +1971,12 @@
  * @property {3} KEEPFILTERSEDITABLE - Preserve the editability of filters.
  * @property {2} RASTERIZEFILTERS - Preserve the appearance of filters by rasterizing it.
 */
+/** @type {FiltersPreservePolicy} */
+const FiltersPreservePolicy = {
+	EXPANDFILTERS : 1,
+	KEEPFILTERSEDITABLE : 3,
+	RASTERIZEFILTERS : 2,
+};
 
 /**
  * @typedef {Object} TextPreservePolicy - Text preserve policy used by FXG file format.
@@ -1055,24 +1985,46 @@
  * @property {1} OUTLINETEXT - Preserve the appearance of text by outlining it.
  * @property {2} RASTERIZETEXT - Preserve the appearance of text by rasterizing it.
 */
+/** @type {TextPreservePolicy} */
+const TextPreservePolicy = {
+	AUTOMATICALLYCONVERTTEXT : 4,
+	KEEPTEXTEDITABLE : 3,
+	OUTLINETEXT : 1,
+	RASTERIZETEXT : 2,
+};
 
 /**
  * @typedef {Object} GradientsPreservePolicy - Gradients preserve policy used by FXG file format.
  * @property {4} AUTOMATICALLYCONVERTGRADIENTS - Automatically Convert Gradients.
  * @property {3} KEEPGRADIENTSEDITABLE - Preserve the editability of gradients.
 */
+/** @type {GradientsPreservePolicy} */
+const GradientsPreservePolicy = {
+	AUTOMATICALLYCONVERTGRADIENTS : 4,
+	KEEPGRADIENTSEDITABLE : 3,
+};
 
 /**
  * @typedef {Object} BlendsExpandPolicy - Blends Expand policy used by FXG file format.
  * @property {1} AUTOMATICALLYCONVERTBLENDS - Automatically Convert Blends.
  * @property {2} RASTERIZEBLENDS - Expand Blends by Rasterizing.
 */
+/** @type {BlendsExpandPolicy} */
+const BlendsExpandPolicy = {
+	AUTOMATICALLYCONVERTBLENDS : 1,
+	RASTERIZEBLENDS : 2,
+};
 
 /**
  * @typedef {Object} CoordinateSystem - Coordinate system used by Illustrator.
  * @property {1} ARTBOARDCOORDINATESYSTEM - Artboard coordinate system.
  * @property {0} DOCUMENTCOORDINATESYSTEM - Document coordinate system.
 */
+/** @type {CoordinateSystem} */
+const CoordinateSystem = {
+	ARTBOARDCOORDINATESYSTEM : 1,
+	DOCUMENTCOORDINATESYSTEM : 0,
+};
 
 /**
  * @typedef {Object} SymbolRegistrationPoint - The symbol registration point.
@@ -1086,6 +2038,18 @@
  * @property {2} SYMBOLTOPMIDDLEPOINT - Top middle point of symbol bounding box.
  * @property {3} SYMBOLTOPRIGHTPOINT - Top right point of symbol bounding box.
 */
+/** @type {SymbolRegistrationPoint} */
+const SymbolRegistrationPoint = {
+	SYMBOLBOTTOMLEFTPOINT : 7,
+	SYMBOLBOTTOMMIDDLEPOINT : 8,
+	SYMBOLBOTTOMRIGHTPOINT : 9,
+	SYMBOLCENTERPOINT : 5,
+	SYMBOLMIDDLELEFTPOINT : 4,
+	SYMBOLMIDDLERIGHTPOINT : 6,
+	SYMBOLTOPLEFTPOINT : 1,
+	SYMBOLTOPMIDDLEPOINT : 2,
+	SYMBOLTOPRIGHTPOINT : 3,
+};
 
 /**
  * @typedef {Object} PerspectiveGridPlaneType - Perspective grid plane types.
@@ -1094,6 +2058,13 @@
  * @property {0} NOPLANE - Invalid Perspective Grid Plane Type.
  * @property {2} RIGHTPLANE - Perspective Grid Right Plane Type.
 */
+/** @type {PerspectiveGridPlaneType} */
+const PerspectiveGridPlaneType = {
+	FLOORPLANE : 3,
+	LEFTPLANE : 1,
+	NOPLANE : 0,
+	RIGHTPLANE : 2,
+};
 
 /**
  * @typedef {Object} FirstBaselineType - Text Item First baseline types.
@@ -1105,6 +2076,16 @@
  * @property {6} BASELINELEGACY - First Baseline Legacy Type.
  * @property {3} BASELINEXHEIGHT - First Baseline x Height Type.
 */
+/** @type {FirstBaselineType} */
+const FirstBaselineType = {
+	BASELINEASCENT : 0,
+	BASELINECAPHEIGHT : 1,
+	BASELINEEMBOXHEIGHT : 4,
+	BASELINEFIXED : 5,
+	BASELINELEADING : 2,
+	BASELINELEGACY : 6,
+	BASELINEXHEIGHT : 3,
+};
 
 /**
  * @typedef {Object} DocumentLayoutStyle - Document layout style types.
@@ -1114,6 +2095,14 @@
  * @property {1} HORIZONTALTILE - Arranges documents as horizontal tiles.
  * @property {2} VERTICALTILE - Arranges documents as vertical tiles.
 */
+/** @type {DocumentLayoutStyle} */
+const DocumentLayoutStyle = {
+	CASCADE : 0,
+	CONSOLIDATEALL : 4,
+	FLOATALL : 3,
+	HORIZONTALTILE : 1,
+	VERTICALTILE : 2,
+};
 
 /**
  * A collection of artboards.
