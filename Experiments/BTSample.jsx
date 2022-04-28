@@ -101,7 +101,7 @@ function BTSample () {
 	 * @param { Record<string, unknown> | any[] | boolean | string | number } arguments - An argument which will be serialized into JSON.
 	 * @param {(res: { body: string }) => void} [onResult]  - Optional method to perform a follow-up action in the ScriptUI window.
 	 */
-	function makeBTCall (methodName, arguments, onResult) {
+	function makeBTCall (appName, methodName, arguments, onResult) {
 		checkMethod(methodName);
 		var argString = "";
 		if (typeof arguments == "object" && arguments !== null) {
@@ -128,7 +128,7 @@ function BTSample () {
 			)
 		) + "')));";
 		var bt = new BridgeTalk();
-		bt.target = "illustrator";
+		bt.target = appName;
 		bt.onError = function (error) {
 			alert(getTrimmedError(error.body));
 		}
@@ -147,14 +147,14 @@ function BTSample () {
 		var btn_2 = g1.add("button", undefined, "Action 2");
 	
 		function callMakeACircle (xyArray) {
-			makeBTCall(makeACircle.name, xyArray, function (res) {
+			makeBTCall(BridgeTalk.appName, makeACircle.name, xyArray, function (res) {
 				var parsedBody = JSON.parse(res.body);
 				e_res.text = parsedBody.result.circleResult || parsedBody.result;
 			});
 		};
 
 		function callMakeASquare (xyObj) {
-			makeBTCall(makeASquare.name, xyObj, function (res) {
+			makeBTCall(BridgeTalk.appName, makeASquare.name, xyObj, function (res) {
 				var parsedBody = JSON.parse(res.body);
 				e_res.text = parsedBody.result.squareResult || parsedBody.result;
 			});
