@@ -1610,7 +1610,7 @@ for (var i = 0; i < UIElements.length; i++) {
     };
 }
 ;
-function makeBTCall2022(appName, scriptFunction, scriptFunctionName, methodName, argumentsObj, onResult) {
+function makeBTCall2022(appName, scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj, onResult) {
     function hexDecode(str) { var j; var hexes = str.match(/.{1,4}/g) || []; var back = ""; for (j = 0; j < hexes.length; j++) {
         back += String.fromCharCode(parseInt(hexes[j], 16));
     } return back; }
@@ -1654,8 +1654,8 @@ function makeBTCall2022(appName, scriptFunction, scriptFunctionName, methodName,
     }
     var callLine = scriptFunctionName + "(" + (methodName ? "'" + methodName + "'" : "") + (argString ? ", " + argString : "") + ");";
     var scriptString = "eval('''" + decodeBT.toString() + "'''.replace(/\\\\/g, \"\\\"))" + "; eval(decodeBT('''" +
-        encodeBT(scriptFunction + "\n" +
-            callLine)
+        encodeBT(scriptFunction +
+            ((useGivenMethod !== true) ? ("\n" + callLine) : ""))
         + "'''));";
     var bt = new BridgeTalk();
     bt.target = appName;
@@ -2887,6 +2887,105 @@ function ProgressPalette(max, title, location, labelChars) {
         lbl.setValue(val);
     };
 }
+function convertAppColor(src, dest, clrArr) {
+    return app.convertSampleColor(ImageColorSpace[src], clrArr, ImageColorSpace[dest], ColorConvertPurpose.defaultpurpose);
+}
+;
+function getUIRGB(type, clr) {
+    var round2 = function (num) { return Math.round(num * 100) / 100; };
+    if (clr.length == 0) {
+        return [0.5, 0.5, 0.5];
+    }
+    for (var x = 0; x < clr.length; x++) {
+        clr[x] = clr[x] * 1;
+    }
+    if (type == "RGB") {
+        return [round2(clr[0] / 255), round2(clr[1] / 255), round2(clr[2] / 255)];
+    }
+    else if (type == "CMYK") {
+        var newArr = convertAppColor("CMYK", "RGB", [clr[0], clr[1], clr[2], clr[3]]);
+        return [round2(newArr[0] / 255), round2(newArr[1] / 255), round2(newArr[2] / 255)];
+    }
+    else if (type == "GRAY") {
+        var newArr = convertAppColor("GrayScale", "RGB", [clr[0]]);
+        return [round2(newArr[0] / 255), round2(newArr[1] / 255), round2(newArr[2] / 255)];
+    }
+    else if (type == "LAB") {
+        var newArr = convertAppColor("LAB", "RGB", [clr[0], clr[1], clr[2]]);
+        return [round2(newArr[0] / 255), round2(newArr[1] / 255), round2(newArr[2] / 255)];
+    }
+    else {
+        return [0.5, 0.5, 0.5];
+    }
+}
+;
+function hexToRgb(hex) {
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return [result[1], result[2], result[3]] ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+    ] : null;
+}
+;
+function getColorNumbers(sourceTextContent) {
+    var s = sourceTextContent.toString();
+    var rx_hex = /^#(?:[0-9a-f]{3}){1,2}$/i;
+    var rx_rgb = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i;
+    var rx_cmyk = /^cmyk\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i;
+    if (s.match(rx_hex)) {
+        return hexToRgb(s);
+    }
+    else if (s.match(rx_rgb)) {
+        var m = s.match(rx_rgb);
+        return [Number(m[1]), Number(m[2]), Number(m[3])];
+    }
+    else if (s.match(rx_cmyk)) {
+        var m = s.match(rx_cmyk);
+        return [Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4])];
+    }
+    throw new Error("Unable to process the color.");
+}
+;
+function buildProcessColor(numbers, forceMode) {
+    var n = numbers, result;
+    if (app.activeDocument.documentColorSpace == DocumentColorSpace.RGB || (app.activeDocument.documentColorSpace == DocumentColorSpace.CMYK && forceMode == "RGB")) {
+        result = new RGBColor();
+        if (n.length == 4) {
+            var c = app.convertSampleColor(ImageColorSpace.CMYK, n, ImageColorSpace.RGB, ColorConvertPurpose.defaultpurpose);
+            result.red = c[0];
+            result.green = c[1];
+            result.blue = c[2];
+        }
+        else {
+            result.red = n[0];
+            result.green = n[1];
+            result.blue = n[2];
+        }
+    }
+    else if (app.activeDocument.documentColorSpace == DocumentColorSpace.CMYK || (app.activeDocument.documentColorSpace == DocumentColorSpace.RGB && forceMode == "CMYK")) {
+        result = new CMYKColor();
+        if (n.length == 3) {
+            var c = app.convertSampleColor(ImageColorSpace.RGB, n, ImageColorSpace.CMYK, ColorConvertPurpose.defaultpurpose);
+            result.cyan = c[0];
+            result.magenta = c[1];
+            result.yellow = c[2];
+            result.black = c[3];
+        }
+        else {
+            result.cyan = n[0];
+            result.magenta = n[1];
+            result.yellow = n[2];
+            result.black = n[3];
+        }
+    }
+    return result;
+}
+;
 function drawFromObjString(objString, canvasArea) {
     function round2(num) {
         return Math.round(num * 100) / 100;
@@ -4317,7 +4416,7 @@ function main(title) {
 }
 function GET_SETTINGS() {
     var SETTINGS = {
-        "scriptVersion": "1.3.2",
+        "scriptVersion": "1.0.11",
         windowGraphics: true,
         syncLocations: true,
         tinyWindowLocation: [860, 350],
@@ -4364,6 +4463,7 @@ function runScriptFromFile(file) {
     var newScriptLines = [
         "var btScript_MyLocation = \"" + decodeURI(sf.toString()) + "\";",
     ];
+    var hasUseGivenMethod = false;
     for (var i = 0; i < scriptStringLines.length; i++) {
         var addThisLine = true;
         var thisScriptLine = scriptStringLines[i];
@@ -4374,13 +4474,19 @@ function runScriptFromFile(file) {
             addThisLine = false;
         }
         if (thisScriptLine.startsWith(scriptFuncName + "(")) {
-            addThisLine = false;
+            var useGivenMethodMatch = scriptString.substring(0, 500).match(/"useGivenMethod"\s?\:\s?true/m);
+            if (!useGivenMethodMatch) {
+                addThisLine = false;
+            }
+            else {
+                hasUseGivenMethod = true;
+            }
         }
         if (addThisLine) {
             newScriptLines.push(thisScriptLine);
         }
     }
-    makeBTCall2022("illustrator", newScriptLines.join("\n"), scriptFuncName);
+    makeBTCall2022("illustrator", newScriptLines.join("\n"), scriptFuncName, hasUseGivenMethod);
 }
 function writeSettingsFile(dest, newData) {
     var writeData;
@@ -4472,6 +4578,17 @@ function getFolderScriptObjs(folderPath) {
                 catch (e) {
                 }
                 ;
+            }
+            var auxMetaJSONFile = File(thisJsx.parent + "/" + thisJsxName.replace(/jsx$/ig, "txt"));
+            if (auxMetaJSONFile.exists) {
+                try {
+                    var auxObj = getJsonData(auxMetaJSONFile.fsName);
+                    if (auxObj) {
+                        Object.assign(obj, auxObj);
+                    }
+                }
+                catch (e) {
+                }
             }
             if (SETTINGS.getAllScripts) {
                 arr.push(obj);
@@ -4596,7 +4713,9 @@ function getNotes() {
 var SCPPaletteWindow = (function () {
     function SCPPaletteWindow() {
         var windowType = "palette";
-        var w = new Window(windowType, (SETTINGS.title), undefined, { closeButton: false, borderless: false });
+        var devStr = (PANELSCRIPT_LOCATION.fsName.includes("_DEV") ? " _DEV" : "");
+        devStr = (PANELSCRIPT_LOCATION.fsName.includes("_STAGE") ? " _STAGE" : devStr);
+        var w = new Window(windowType, (SETTINGS.title + devStr), undefined, { closeButton: false, borderless: false });
         this.w = w;
         w.spacing = 2;
         w.margins = [2, 2, 2, 2];
@@ -5231,6 +5350,9 @@ function setUpFolderScriptButtons(parent, scriptCollectionObj) {
         var thisScript = sco.items[i];
         if (thisScript.hasOwnProperty("sectionColor")) {
             try {
+                if (typeof thisScript.sectionColor == "string" && thisScript.sectionColor.startsWith("#")) {
+                    thisScript.sectionColor = getUIRGB("RGB", hexToRgb(thisScript.sectionColor));
+                }
                 parent.setBg(thisScript.sectionColor);
             }
             catch (e) {
