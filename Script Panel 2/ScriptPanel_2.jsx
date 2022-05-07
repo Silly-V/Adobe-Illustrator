@@ -4439,7 +4439,7 @@ function main(title) {
 }
 function GET_SETTINGS() {
     var SETTINGS = {
-        "scriptVersion": "1.0.35",
+        "scriptVersion": "1.0.37",
         windowGraphics: true,
         syncLocations: true,
         tinyWindowLocation: [860, 350],
