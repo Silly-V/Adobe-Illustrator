@@ -1610,7 +1610,7 @@ for (var i = 0; i < UIElements.length; i++) {
     };
 }
 ;
-function makeBTCall2022(appName, scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj, onResult) {
+function makeDynamicScript(scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj) {
     function hexDecode(str) { var j; var hexes = str.match(/.{1,4}/g) || []; var back = ""; for (j = 0; j < hexes.length; j++) {
         back += String.fromCharCode(parseInt(hexes[j], 16));
     } return back; }
@@ -1657,13 +1657,17 @@ function makeBTCall2022(appName, scriptFunction, scriptFunctionName, useGivenMet
     }
     var callLine = scriptFunctionName + "(" + (methodName ? "'" + methodName + "'" : "") + (argString ? ", " + argString : "") + ");";
     var JSONString = "\"object\"!=typeof JSON&&(JSON={}),function(){\"use strict\";function f(t){return 10>t?\"0\"+t:t}function quote(t){\n\t\treturn escapable.lastIndex=0,escapable.test(t)?'\"'+t.replace(escapable,function(t){var e=meta[t];\n\t\t\treturn\"string\"==typeof e?e:\"\\\\u\"+(\"0000\"+t.charCodeAt(0).toString(16)).slice(-4)})+'\"':'\"'+t+'\"'}\n\t\tfunction str(t,e){var n,r,o,f,u,i=gap,p=e[t];switch(p&&\"object\"==typeof p&&\"function\"==typeof p.toJSON&&(p=p.toJSON(t)),\n\t\t\t\"function\"==typeof rep&&(p=rep.call(e,t,p)),typeof p){case\"string\":return quote(p);case\"number\":return isFinite(p)?String(p):\"null\";\n\t\tcase\"boolean\":case\"null\":return String(p);case\"object\":if(!p)return\"null\";if(gap+=indent,u=[],\"[object Array]\"===Object.prototype.toString.apply(p)){\n\t\t\tfor(f=p.length,n=0;f>n;n+=1)u[n]=str(n,p)||\"null\";return o=0===u.length?\"[]\":gap?\"[\\n\"+gap+u.join(\",\\n\"+gap)+\"\\n\"+i+\"]\":\"[\"+u.join(\",\")+\"]\",gap=i,o}\n\t\t\t\tif(rep&&\"object\"==typeof rep)for(f=rep.length,n=0;f>n;n+=1)\"string\"==typeof rep[n]&&(r=rep[n],o=str(r,p),o&&u.push(quote(r)+(gap?\": \":\":\")+o));\n\t\t\telse for(r in p)Object.prototype.hasOwnProperty.call(p,r)&&(o=str(r,p),o&&u.push(quote(r)+(gap?\": \":\":\")+o));return o=0===u.length?\"{}\":gap?\"{\\n\"+gap+\n\t\t\tu.join(\",\\n\"+gap)+\"\\n\"+i+\"}\":\"{\"+u.join(\",\")+\"}\",gap=i,o}}\"function\"!=typeof Date.prototype.toJSON&&(Date.prototype.toJSON=function(){\n\t\t\t\treturn isFinite(this.valueOf())?this.getUTCFullYear()+\"-\"+f(this.getUTCMonth()+1)+\"-\"+f(this.getUTCDate())+\"T\"+f(this.getUTCHours())+\":\"+\n\t\t\t\tf(this.getUTCMinutes())+\":\"+f(this.getUTCSeconds())+\"Z\":null},String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(){\n\t\t\t\t\treturn this.valueOf()});var cx,escapable,gap,indent,meta,rep;\"function\"!=typeof JSON.stringify&&\n\t\t\t(escapable=/[\\\\\\\"\\x00-\\x1f\\x7f-\\x9f\\u00ad\\u0600-\\u0604\\u070f\\u17b4\\u17b5\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufeff\\ufff0-\\uffff]/g,\n\t\t\t\tmeta={\"\\b\":\"\\\\b\",\"  \":\"\\\\t\",\"\\n\":\"\\\\n\",\"\\f\":\"\\\\f\",\"\\r\":\"\\\\r\",'\"':'\\\\\"',\"\\\\\":\"\\\\\\\\\"},JSON.stringify=function(t,e,n){var r;\n\t\t\t\t\tif(gap=\"\",indent=\"\",\"number\"==typeof n)for(r=0;n>r;r+=1)indent+=\" \";else\"string\"==typeof n&&(indent=n);if(rep=e,\n\t\t\t\t\t\te&&\"function\"!=typeof e&&(\"object\"!=typeof e||\"number\"!=typeof e.length))throw new Error(\"JSON.stringify\");return str(\"\",{\"\":t})}),\n\t\t\t\"function\"!=typeof JSON.parse&&(cx=/[\\u0000\\u00ad\\u0600-\\u0604\\u070f\\u17b4\\u17b5\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufeff\\ufff0-\\uffff]/g,\n\t\t\t\tJSON.parse=function(text,reviver){function walk(t,e){var n,r,o=t[e];if(o&&\"object\"==typeof o)for(n in o)Object.prototype.hasOwnProperty.call(o,n)&&\n\t\t\t\t(r=walk(o,n),void 0!==r?o[n]=r:delete o[n]);return reviver.call(t,e,o)}var j;if(text=String(text),cx.lastIndex=0,cx.test(text)&&\n\t\t\t\t\t(text=text.replace(cx,function(t){return\"\\\\u\"+(\"0000\"+t.charCodeAt(0).toString(16)).slice(-4)})),\n\t\t\t\t\t/^[\\],:{}\\s]*$/.test(text.replace(/\\\\(?:[\"\\\\\\/bfnrt]|u[0-9a-fA-F]{4})/g,\"@\")\n\t\t\t\t\t\t.replace(/\"[^\"\\\\\\n\\r]*\"|true|false|null|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?/g,\"]\")\n\t\t\t\t\t\t.replace(/(?:^|:|,)(?:\\s*\\[)+/g,\"\")))return j=eval(\"(\"+text+\")\"),\"function\"==typeof reviver?walk({\"\":j},\"\"):j;\n\t\t\t\tthrow new SyntaxError(\"JSON.parse\")})}();";
-    var scriptString = "eval(\"\"\"" + JSONString + "\"\"\")\n" +
+    var scriptString = "eval(decodeURI(\"\"\"" + encodeURI(JSONString) + "\"\"\"))\n" +
         (argString ? getEncodedHelperMethod(hexDecode) + "\n" : "") +
         getEncodedHelperMethod(decodeBT) +
         "\neval(decodeBT('''" +
         encodeBT(scriptFunction)
         + "'''));\n" +
         ((useGivenMethod !== true) ? ("\n" + callLine) : "");
+    return scriptString;
+}
+function makeBTCall2022(appName, scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj, onResult) {
+    var scriptString = makeDynamicScript(scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj);
     var bt = new BridgeTalk();
     bt.target = appName;
     bt.onError = function (error) {
@@ -1676,7 +1680,9 @@ function makeBTCall2022(appName, scriptFunction, scriptFunctionName, useGivenMet
             methodName: methodName
         };
         var message = Object.keys(messageProps).reduce(function (a, b) { return a + "\n" + (b + ": " + messageProps[b]); });
-        throw new Error(message + errorMessage);
+        var combinedErrorMessage = "BT Error Info:\n" + message + "\n" + errorMessage;
+        alert(combinedErrorMessage);
+        throw new Error(combinedErrorMessage);
     };
     bt.onResult = onResult || function (result) {
     };
@@ -1690,6 +1696,11 @@ function debugWriteBTMessage(str) {
     fileObj.write(str);
     fileObj.close();
     fileObj.execute();
+}
+function evalScriptFile(file, scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj) {
+    var scriptString = makeDynamicScript(scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj);
+    writeFile(file.toString(), scriptString);
+    eval("#include \"" + file.fsName + "\"");
 }
 function folderPathInput(parent, title, dialogTitle, buttonTitle) {
     var p = parent.add("panel", undefined, title);
@@ -4463,7 +4474,7 @@ function runScriptFromFile(file, args, methodName, onResult) {
         sf = File(file);
     }
     if (!sf.exists) {
-        throw new Error("Sorry, it appears that this script file cannot be located at '" + decodeURI(sf.toString()) + "'");
+        throw new Error("Sorry, it appears that this script file cannot be located at '" + decodeURI(sf.fsName) + "'");
     }
     var tempLocation = Folder(Folder.temp + "/" + ScriptPanel_2.name);
     createDirectoryPath(tempLocation.fsName);
@@ -4471,7 +4482,8 @@ function runScriptFromFile(file, args, methodName, onResult) {
     var copiedLocalFile = File(copiedLocalFilePath);
     var targetScriptTimeFilePath = tempLocation + "/" + getFileNameFromPath(sf.fsName) + "_mod";
     var targetScriptTimeFile = File(targetScriptTimeFilePath);
-    var targetModTime = sf.modified;
+    var isUnusableMacFile = (SESSION.os == "Mac" && sf.modified === null);
+    var targetModTime = !isUnusableMacFile ? sf.modified : new Date();
     var useCache = false;
     if (copiedLocalFile.exists && targetScriptTimeFile.exists) {
         var lastTargetModStoredValue = readFile(targetScriptTimeFilePath);
@@ -4523,7 +4535,13 @@ function runScriptFromFile(file, args, methodName, onResult) {
             newScriptLines.push(thisScriptLine);
         }
     }
-    makeBTCall2022("illustrator", newScriptLines.join("\n"), scriptFuncName, hasUseGivenMethod, methodName, args, onResult);
+    var newScriptString = newScriptLines.join("\n");
+    if (!isUnusableMacFile) {
+        makeBTCall2022("illustrator", newScriptLines.join("\n"), scriptFuncName, hasUseGivenMethod, methodName, args, onResult);
+    }
+    else {
+        evalScriptFile(copiedLocalFile, newScriptString, scriptFuncName, hasUseGivenMethod, methodName, args);
+    }
 }
 function writeSettingsFile(dest, newData) {
     var writeData;
