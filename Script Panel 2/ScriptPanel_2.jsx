@@ -1703,7 +1703,7 @@ function evalScriptFile(file, scriptFunction, scriptFunctionName, useGivenMethod
         scriptString = "#target illustrator\n#targetengine 'main'" + scriptString;
     }
     writeFile(file.toString(), scriptString);
-    eval("#include \"" + file.fsName + "\"");
+    $.evalFile(file);
 }
 function folderPathInput(parent, title, dialogTitle, buttonTitle) {
     var p = parent.add("panel", undefined, title);
@@ -4521,7 +4521,9 @@ function runScriptFromFile(file, args, methodName, onResult) {
         var thisScriptLine = scriptStringLines[i];
         if (thisScriptLine.match(/^(#|\/\/@)target/)) {
             if (firstFoundTargetDirective == null) {
-                firstFoundTargetDirective = thisScriptLine.replace(/^(#|\/\/@)target /, "").replace(/\s/g, "");
+                if (!thisScriptLine.includes("targetengine")) {
+                    firstFoundTargetDirective = thisScriptLine.replace(/^(#|\/\/@)target /, "").replace(/\s/g, "");
+                }
             }
             addThisLine = false;
         }
@@ -4540,12 +4542,7 @@ function runScriptFromFile(file, args, methodName, onResult) {
         }
     }
     var newScriptString = newScriptLines.join("\n");
-    if (!isUnusableMacFile) {
-        makeBTCall2022("illustrator", newScriptLines.join("\n"), scriptFuncName, hasUseGivenMethod, methodName, args, onResult);
-    }
-    else {
-        evalScriptFile(copiedLocalFile, newScriptString, scriptFuncName, hasUseGivenMethod, methodName, args);
-    }
+    makeBTCall2022(firstFoundTargetDirective || "illustrator", newScriptString, scriptFuncName, hasUseGivenMethod, methodName, args, onResult);
 }
 function writeSettingsFile(dest, newData) {
     var writeData;
