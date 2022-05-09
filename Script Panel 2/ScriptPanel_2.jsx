@@ -1699,6 +1699,9 @@ function debugWriteBTMessage(str) {
 }
 function evalScriptFile(file, scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj) {
     var scriptString = makeDynamicScript(scriptFunction, scriptFunctionName, useGivenMethod, methodName, argumentsObj);
+    if (BridgeTalk.appName == "illustrator") {
+        scriptString = "#target illustrator\n#targetengine 'main'" + scriptString;
+    }
     writeFile(file.toString(), scriptString);
     eval("#include \"" + file.fsName + "\"");
 }
@@ -4450,7 +4453,7 @@ function main(title) {
 }
 function GET_SETTINGS() {
     var SETTINGS = {
-        "scriptVersion": "1.0.37",
+        "scriptVersion": "1.1.0",
         windowGraphics: true,
         syncLocations: true,
         tinyWindowLocation: [860, 350],
@@ -4478,12 +4481,12 @@ function runScriptFromFile(file, args, methodName, onResult) {
     }
     var tempLocation = Folder(Folder.temp + "/" + ScriptPanel_2.name);
     createDirectoryPath(tempLocation.fsName);
-    var copiedLocalFilePath = tempLocation + "/" + getFileNameFromPath(sf.fsName);
+    var copiedLocalFilePath = tempLocation + "/" + getFileNameFromPath(sf.fsName) + ".jsx";
     var copiedLocalFile = File(copiedLocalFilePath);
     var targetScriptTimeFilePath = tempLocation + "/" + getFileNameFromPath(sf.fsName) + "_mod";
     var targetScriptTimeFile = File(targetScriptTimeFilePath);
     var isUnusableMacFile = (SESSION.os == "Mac" && sf.modified === null);
-    var targetModTime = !isUnusableMacFile ? sf.modified : new Date();
+    var targetModTime = !isUnusableMacFile ? sf.modified || new Date() : new Date();
     var useCache = false;
     if (copiedLocalFile.exists && targetScriptTimeFile.exists) {
         var lastTargetModStoredValue = readFile(targetScriptTimeFilePath);
@@ -4522,7 +4525,8 @@ function runScriptFromFile(file, args, methodName, onResult) {
             }
             addThisLine = false;
         }
-        if (thisScriptLine.startsWith(scriptFuncName + "(")) {
+        var wrapperMethodRX = new RegExp("^(\\s+)?" + scriptFuncName + "(\\s+)?\\(");
+        if (thisScriptLine.match(wrapperMethodRX)) {
             var useGivenMethodMatch = scriptString.substring(0, 500).match(/"useGivenMethod"\s?\:\s?true/m);
             if (!useGivenMethodMatch) {
                 addThisLine = false;
@@ -5506,7 +5510,12 @@ function setUpFolderScriptButtons(parent, scriptCollectionObj) {
                 scriptPropertiesDialog(thisScript);
             }
             else {
-                runScriptFromFile(File(thisScriptPath));
+                try {
+                    runScriptFromFile(File(thisScriptPath));
+                }
+                catch (e) {
+                    quickView(ScriptPanel_2.name + " Script Execution Error: " + e.message);
+                }
                 deFocusPanel();
             }
         };
@@ -5565,7 +5574,12 @@ function setUpFolderScriptListbox(parent, scriptCollectionObj) {
     }
     listBox.onDoubleClick = function () {
         if (this.selection != null && this.selection.hasOwnProperty("path")) {
-            runScriptFromFile(File(this.selection.path));
+            try {
+                runScriptFromFile(File(this.selection.path));
+            }
+            catch (error) {
+                quickView(ScriptPanel_2.name + " Script Execution Error: " + error.message);
+            }
             deFocusPanel();
         }
     };
@@ -5612,7 +5626,12 @@ function setUpTreeView(parent, scriptCollectionObj, folderCollectionObj) {
     }
     t.onDoubleClick = function () {
         if (this.selection != null && this.selection.hasOwnProperty("path")) {
-            runScriptFromFile(File(this.selection.path));
+            try {
+                runScriptFromFile(File(this.selection.path));
+            }
+            catch (e) {
+                quickView(ScriptPanel_2.name + " Script Execution Error: " + e.message);
+            }
             deFocusPanel();
         }
     };
