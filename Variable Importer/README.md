@@ -2,7 +2,7 @@
 For over a decade, `VariableImporter.jsx` has powered workflows for thousands of companies worldwide.
 Now in 2025, we’re excited to introduce **Darty-Ai** — a revolutionary new way to control the vast majority of Adobe Illustrator’s tools, all through a simple spreadsheet interface.
 
-<img src="http://darty.ai/wp-content/uploads/2026/01/VariableImporter_TryDarty-1.svg" />
+![https://darty.ai](https://darty.ai/wp-content/uploads/2026/01/VariableImporter_TryDarty-1.svg)
 
 With Darty-Ai, you can effortlessly:  
 * Apply colors, strokes, and fills to objects and text
