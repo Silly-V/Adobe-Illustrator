@@ -32,6 +32,7 @@ VariableImporter blogs and tutorials I have found and deem officially wholesome:
 * Spanish-language video: https://youtu.be/9zea08XqrcQ?si=HYWtafZ_6Yn4QLQ1
 * VariableImporter for floor plans, Ian Cole: https://medium.com/@ian.cole/creating-event-space-plans-with-adobe-illustrator-and-the-variable-importer-4c0e7f820905
 * Automating Data-Driven Graphs Using Adobe Illustrator: https://www.radishlab.com/automating-data-driven-graphs-using-adobe-illustrator/
+* VariableImporter used in a Geospatial infographic project: https://element84.com/geospatial/spatial-analysis/using-arcmap-r-and-adobe-illustrator-to-create-data-driven-infographics/
 
 ---
 
